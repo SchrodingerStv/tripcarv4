@@ -3,6 +3,8 @@ package com.example.steven.tripcar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
@@ -31,6 +34,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -88,9 +93,95 @@ public class CocheSelectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_coche_select, container, false);
-    }
+        final View view = inflater.inflate(R.layout.fragment_coche_select, container, false);
 
+
+            TareaObtenerCoche tarea = new TareaObtenerCoche();
+            tarea.execute();
+
+
+
+        return  view;
+    }
+    private class TareaObtenerCoche extends AsyncTask<String,Integer,Boolean> {
+
+
+        private String matricula;
+        private String imagen;
+        private Bitmap bitmap;
+        private InputStream srt = null;
+        private String marcamodelo;
+        private String  tamanio;
+        private Double decimal;
+
+        protected Boolean doInBackground(String... params) {
+
+            boolean result = true;
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            //String matricula = params[0];
+
+            SharedPreferences prefe=getActivity().getSharedPreferences("Matricula", Context.MODE_PRIVATE);
+            String d=prefe.getString("Matricula", "");
+            HttpGet del = new HttpGet("http://192.168.1.38/ServicioRestTripCar/Api/Coches/Coche/" +d);
+
+            del.setHeader("content-type", "application/json");
+
+            try
+            {
+                HttpResponse resp = httpClient.execute(del);
+                String respStr = EntityUtils.toString(resp.getEntity());
+
+                JSONObject respJSON = new JSONObject(respStr);
+
+                marcamodelo = respJSON.getString("MarcaModelo");
+
+                tamanio = respJSON.getString("Tamanio");
+
+                imagen  = respJSON.getString("Imagen");
+
+                matricula  = respJSON.getString("Matricula");
+
+                decimal  = respJSON.getDouble("PrecioDia");
+
+
+                try {
+                    srt = new java.net.URL(imagen).openStream();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                bitmap = BitmapFactory.decodeStream(srt);
+
+
+            }
+            catch(Exception ex)
+            {
+                Log.e("ServicioRest","Error!", ex);
+                result = false;
+            }
+
+            return result;
+        }
+        protected void onPostExecute(Boolean result) {
+
+            if (result) {
+
+                TextView txtMatricula = (TextView) getActivity().findViewById(R.id.matriculaSelect);
+                TextView txtTamanio = (TextView) getActivity().findViewById(R.id.tamanioSelect);
+                TextView txtPrecio = (TextView) getActivity().findViewById(R.id.marcaModeloSelect);
+                TextView txtMarca = (TextView) getActivity().findViewById(R.id.precioSelect);
+                txtMatricula.setText(matricula);
+                txtMarca.setText(marcamodelo);
+                txtPrecio.setText(decimal.toString());
+                txtTamanio.setText(tamanio);
+                ImageView img = (ImageView) getActivity().findViewById(R.id.imagenCoche) ;
+                img.setImageBitmap(bitmap);
+
+            }
+        }
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

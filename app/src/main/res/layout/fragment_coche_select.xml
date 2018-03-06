@@ -1,13 +1,76 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context="com.example.steven.tripcar.CocheSelectFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+        android:id="@+id/imagenCoche"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/labelMarcaSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Marca:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/marcaModeloSelect"
+        android:layout_width="219dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="-27dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+    <TextView
+        android:id="@+id/labelTamanioSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tamaño:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/tamanioSelect"
+        android:layout_width="219dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="-28dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+    <TextView
+        android:id="@+id/labelPrecioSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Precio:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/precioSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="-27dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+    <TextView
+        android:id="@+id/labelMatriculaSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Matricula:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/matriculaSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="93dp"
+        android:layout_marginTop="-27dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+
+
+</LinearLayout>

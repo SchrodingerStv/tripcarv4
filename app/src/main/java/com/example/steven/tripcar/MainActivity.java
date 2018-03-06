@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
         }
         if(fragmentSeleccionado){
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_main,currentFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_main,currentFragment).addToBackStack(null).commit();
         }
 
 

@@ -100,7 +100,11 @@ public class MyAdapter extends ArrayAdapter<String>  {
 
                     CocheSelectFragment coche =  new CocheSelectFragment();
                     FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_main,coche).commit();
+                    SharedPreferences preferencias= fa.getSharedPreferences("Matricula", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor=preferencias.edit();
+                    editor.putString("Matricula",matricula[pos]);
+                    editor.commit();
+                    ft.replace(R.id.content_main,coche).addToBackStack(null).commit();
 
                 }
 

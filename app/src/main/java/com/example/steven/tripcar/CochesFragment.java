@@ -64,10 +64,7 @@ public class CochesFragment extends Fragment {
     private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Coches";
     private OnFragmentInteractionListener mListener;
     private ListView mListView;
-    String[] countryNames = {"Australia", "Brazil", "China"};
-    int[] countryFlags = {R.drawable.ic_nav_exit,
-            R.drawable.ic_nav_coches,
-            R.drawable.ic_launcher_background};
+
     public CochesFragment() {
         // Required empty public constructor
     }
@@ -123,7 +120,7 @@ public class CochesFragment extends Fragment {
         private String [] matricula;
         private String [] tamanio;
         private Double[] decimal;
-        InputStream srt = null;
+        private InputStream srt = null;
         private Bitmap[] imagen = null;
 
         protected Boolean doInBackground(String... params) {
