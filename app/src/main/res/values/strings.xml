@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">TripCar</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="login">Ingresar/Registrarse</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hola2">SOY UN BUSCADOR</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hola3">SOY LA GESTION</string>
+    <string name="Nombre">Nombre</string>
+    <string name="Email">Email</string>
+    <string name="DNI">DNI</string>
+    <string name="Aceptar">Entrar</string>
+    <string name="Contraseña">Contraseña</string>
+    <string name="Registrarse">Registrarse</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="Ingresar">Ingresar</string>
+    <string name="Salir">Salir</string>
+</resources>

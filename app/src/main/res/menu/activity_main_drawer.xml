@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_loing"
+            android:icon="@drawable/ic_nav_login"
+            android:title="Ingresar" />
+        <item
+            android:id="@+id/nav_coches"
+            android:icon="@drawable/ic_nav_coches"
+            android:title="Catalogo" />
+        <item
+            android:id="@+id/nav_gestion"
+            android:icon="@drawable/ic_nav_gestion"
+            android:title="Reservas" />
+        <item
+            android:id="@+id/nav_exit"
+            android:icon="@drawable/ic_nav_exit"
+            android:title="Salir" />
+
+    </group>
+
+
+
+</menu>
