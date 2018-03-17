@@ -25,33 +25,31 @@ import com.example.steven.tripcar.models.LoginFragment;
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.RegistroFragment;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,GestionReservasFragment.OnFragmentInteractionListener,
         BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener {
+    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
 
-/*para un boton de home en la esquina de abajo meterlo en app_Bar_activity
-<android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        Fragment fragment = new RegistroFragment();
+        Fragment fragment = new CochesFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.content_main,fragment).commit();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -60,8 +58,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
         TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
         TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-        nombre.setText("user");
-
+        nombre.setText("");
+        email.setText("user@user.com");
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -134,9 +132,9 @@ public class MainActivity extends AppCompatActivity
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 View headerView = navigationView.getHeaderView(0);
                 TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText("usario@user.com");
+                email.setText("user@user.com");
                 TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-                nombre.setText("user");
+                nombre.setText("");
                 navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
 

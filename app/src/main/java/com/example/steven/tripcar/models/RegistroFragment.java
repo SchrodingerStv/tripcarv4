@@ -1,5 +1,7 @@
 package com.example.steven.tripcar.models;
 
+import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +26,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import com.example.steven.tripcar.services.usuariosService;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,11 +48,13 @@ public class RegistroFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario";
+    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
     private EditText txtEmail;
     private EditText txtNombre;
     private EditText txtDNI;
     private EditText txtContrasenia;
+    Comunicator comunicator;
+    usuariosService usuariosService;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -71,6 +83,7 @@ public class RegistroFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +94,7 @@ public class RegistroFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_registro, container, false);
@@ -92,17 +105,20 @@ public class RegistroFragment extends Fragment {
         txtNombre = (EditText) view.findViewById(R.id.nombre);
         txtDNI = (EditText) view.findViewById(R.id.dni);
         txtContrasenia = (EditText) view.findViewById(R.id.contrasenia);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        usuariosService = retrofit.create(usuariosService.class);
+
         btnRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-
-                TareaInsertarUsuario tarea = new TareaInsertarUsuario();
-                tarea.execute(
-                        txtEmail.getText().toString(),
-                        txtNombre.getText().toString(),
-                        txtContrasenia.getText().toString(),
-                        txtDNI.getText().toString());
-
+                    Usuario usuario = new Usuario();
+                    usuario.setNombre( txtNombre.getText().toString());
+                    usuario.setDNI(Integer.parseInt(txtDNI.getText().toString()));
+                    usuario.setEmail( txtEmail.getText().toString() );
+                    usuario.setContrasenia(txtContrasenia.getText().toString());
+                    insertarUsuario(usuario);
 
 
             }
@@ -118,7 +134,7 @@ public class RegistroFragment extends Fragment {
         });
         return view;
     }
-
+/*
     private class TareaInsertarUsuario extends AsyncTask<String,Integer,Boolean> {
 
         protected Boolean doInBackground(String... params) {
@@ -172,6 +188,42 @@ public class RegistroFragment extends Fragment {
             }
         }
     }
+*/
+
+    public void insertarUsuario(Usuario usuario) {
+
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("Registrando");
+        dialog.show();
+        Call<Usuario> u = usuariosService.insertrUsuario(usuario);
+        u.enqueue(new Callback<Usuario>() {
+            @Override
+            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                if(response.isSuccessful()){
+                    //Usuario pacienteResponse = response.body();
+                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Registro con exito", Toast.LENGTH_SHORT);
+                    toast1.show();
+                    LoginFragment fragment  = new LoginFragment();
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+
+                }
+                if(dialog.isShowing()){
+                    dialog.dismiss();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Usuario> call, Throwable t) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Error al registrarse", Toast.LENGTH_SHORT);
+                    toast1.show();
+                }
+            }
+        });
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -183,8 +235,10 @@ public class RegistroFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            //comunicator = (Comunicator) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -210,5 +264,8 @@ public class RegistroFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    public interface Comunicator{
+        void insertarUsuario(Usuario usario);
     }
 }

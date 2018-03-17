@@ -1,5 +1,6 @@
 package com.example.steven.tripcar.models;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.example.steven.tripcar.services.usuariosService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,6 +27,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,10 +53,13 @@ public class LoginFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    usuariosService usuariosService;
     private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario/";
     private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Usuarios/Usuario/";
     private EditText txtUserEmail;
-
+    private String contrasenia;
+    private String email;
     private EditText txtUserContrasenia;
     private OnFragmentInteractionListener mListener;
 
@@ -89,15 +102,20 @@ public class LoginFragment extends Fragment {
         Button btnLogin = (Button)view.findViewById(R.id.ingresar);
         txtUserEmail = (EditText) view.findViewById(R.id.Email);
         txtUserContrasenia = (EditText) view.findViewById(R.id.Contrasenia);
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        usuariosService = retrofit.create(usuariosService.class);
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
+                Usuario usuario = new Usuario();
 
-                TareaComprobarUsuario tarea = new TareaComprobarUsuario();
-                tarea.execute(
-                        txtUserEmail.getText().toString(),
-                        txtUserContrasenia.getText().toString());
+                usuario.setEmail(  txtUserEmail.getText().toString());
+                usuario.setContrasenia(txtUserContrasenia.getText().toString());
 
+                obtenerUsuario(usuario);
 
 
             }
@@ -116,6 +134,7 @@ public class LoginFragment extends Fragment {
         });
         return view;
     }
+    /*
     private class TareaComprobarUsuario extends AsyncTask<String,Integer,Boolean> {
 
 
@@ -187,7 +206,54 @@ public class LoginFragment extends Fragment {
             }
         }
     }
+*/
+    public void obtenerUsuario(Usuario usuario) {
 
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage("Ingresando");
+        dialog.show();
+        Call<Usuario> u = usuariosService.obtenerusario(usuario);
+        u.enqueue(new Callback<Usuario>() {
+            @Override
+            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                if(response.isSuccessful()){
+
+                    String usuarioEmail = response.body().getEmail();
+                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Datos correctos,"+usuarioEmail, Toast.LENGTH_SHORT);
+                    toast1.show();
+                    NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+                    View headerView = navigationView.getHeaderView(0);
+                    TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
+                    email.setText(usuarioEmail);
+                    TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
+                    nombre.setText("");
+                    navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
+                    navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
+
+                    SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor=preferencias.edit();
+                    editor.putString("Email",usuarioEmail);
+                    editor.commit();
+                    BienvenidoFragment fragment  = new BienvenidoFragment();
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                }
+                if(dialog.isShowing()){
+                    dialog.dismiss();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Usuario> call, Throwable t) {
+                if (dialog.isShowing()) {
+                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
+                    toast1.show();
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
 
 
 
