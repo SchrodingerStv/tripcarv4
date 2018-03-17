@@ -1,13 +1,10 @@
-package com.example.steven.tripcar;
+package com.example.steven.tripcar.controllers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,10 +17,18 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.steven.tripcar.models.BienvenidoFragment;
+import com.example.steven.tripcar.models.CocheSelectFragment;
+import com.example.steven.tripcar.models.CochesFragment;
+import com.example.steven.tripcar.models.GestionReservasFragment;
+import com.example.steven.tripcar.models.LoginFragment;
+import com.example.steven.tripcar.R;
+import com.example.steven.tripcar.models.RegistroFragment;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,GestionReservasFragment.OnFragmentInteractionListener,
-        BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener{
+        BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener {
 
 /*para un boton de home en la esquina de abajo meterlo en app_Bar_activity
 <android.support.design.widget.FloatingActionButton

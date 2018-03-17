@@ -1,12 +1,9 @@
-package com.example.steven.tripcar;
+package com.example.steven.tripcar.models;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -15,47 +12,44 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+
+import com.example.steven.tripcar.R;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
+ * {@link RegistroFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
+ * Use the {@link RegistroFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment {
+public class RegistroFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario";
+    private EditText txtEmail;
+    private EditText txtNombre;
+    private EditText txtDNI;
+    private EditText txtContrasenia;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario/";
-    private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Usuarios/Usuario/";
-    private EditText txtUserEmail;
 
-    private EditText txtUserContrasenia;
     private OnFragmentInteractionListener mListener;
 
-    public LoginFragment() {
+    public RegistroFragment() {
         // Required empty public constructor
     }
 
@@ -65,11 +59,11 @@ public class LoginFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
+     * @return A new instance of fragment RegistroFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static RegistroFragment newInstance(String param1, String param2) {
+        RegistroFragment fragment = new RegistroFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -90,43 +84,42 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_login,container,false);
-        Button btnLogin = (Button)view.findViewById(R.id.ingresar);
-        txtUserEmail = (EditText) view.findViewById(R.id.Email);
-        txtUserContrasenia = (EditText) view.findViewById(R.id.Contrasenia);
+        final View view = inflater.inflate(R.layout.fragment_registro, container, false);
+
+        Button btnRegister = (Button) view.findViewById(R.id.registrarse);
+        Button btnLogin = (Button)view.findViewById(R.id.logearse);
+        txtEmail = (EditText) view.findViewById(R.id.email);
+        txtNombre = (EditText) view.findViewById(R.id.nombre);
+        txtDNI = (EditText) view.findViewById(R.id.dni);
+        txtContrasenia = (EditText) view.findViewById(R.id.contrasenia);
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+
+                TareaInsertarUsuario tarea = new TareaInsertarUsuario();
+                tarea.execute(
+                        txtEmail.getText().toString(),
+                        txtNombre.getText().toString(),
+                        txtContrasenia.getText().toString(),
+                        txtDNI.getText().toString());
+
+
+
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
 
-                TareaComprobarUsuario tarea = new TareaComprobarUsuario();
-                tarea.execute(
-                        txtUserEmail.getText().toString(),
-                        txtUserContrasenia.getText().toString());
-
-
-
-            }
-        });
-        Button btnRegister = (Button)view.findViewById(R.id.registro);
-        btnRegister.setOnClickListener(new View.OnClickListener(){
-
-            public void onClick(View v) {
-
-                RegistroFragment fragment  = new RegistroFragment();
+                LoginFragment fragment  = new LoginFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-
-
             }
         });
         return view;
     }
-    private class TareaComprobarUsuario extends AsyncTask<String,Integer,Boolean> {
 
-
-            private String usuarioEmail;
-            private String usuarioNombre;
-
+    private class TareaInsertarUsuario extends AsyncTask<String,Integer,Boolean> {
 
         protected Boolean doInBackground(String... params) {
 
@@ -134,28 +127,29 @@ public class LoginFragment extends Fragment {
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            String email = params[0];
-            String conrasenia = params[1];
+            HttpPost post = new HttpPost(URL);
+            post.setHeader("content-type", "application/json");
 
-            HttpGet del = new HttpGet(URL +email+"/"+conrasenia);
+            try {
+                //Construimos el objeto cliente en formato JSON
+                JSONObject dato = new JSONObject();
 
-            del.setHeader("content-type", "application/json");
+                //dato.put("Id", Integer.parseInt(txtId.getText().toString()));
+                dato.put("email", params[0]);
+                dato.put("nombre", params[1]);
+                dato.put("contrasenia", params[2]);
+                dato.put("dni", Integer.parseInt(params[3]));
 
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
+                StringEntity entity = new StringEntity(dato.toString());
+                post.setEntity(entity);
+
+                HttpResponse resp = httpClient.execute(post);
                 String respStr = EntityUtils.toString(resp.getEntity());
 
-                JSONObject respJSON = new JSONObject(respStr);
-
-                usuarioEmail = respJSON.getString("Email");
-                usuarioNombre = respJSON.getString("Nombre");
-
-
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
+                if (!respStr.equals("true"))
+                    result = false;
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
                 result = false;
             }
 
@@ -164,37 +158,20 @@ public class LoginFragment extends Fragment {
         protected void onPostExecute(Boolean result) {
 
             if (result) {
-                Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Datos correctos,"+usuarioEmail, Toast.LENGTH_SHORT);
+                Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Registro con exito", Toast.LENGTH_SHORT);
                 toast1.show();
-                NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                View headerView = navigationView.getHeaderView(0);
-                TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText(usuarioEmail);
-                TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-                nombre.setText(usuarioNombre);
-                navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
-                navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
-
-                SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor=preferencias.edit();
-                editor.putString("Email",usuarioEmail);
-                editor.commit();
-                BienvenidoFragment fragment  = new BienvenidoFragment();
+                LoginFragment fragment  = new LoginFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
 
 
             } else {
-
-                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
+                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Error al registrarse", Toast.LENGTH_SHORT);
                 toast1.show();
 
             }
         }
     }
-
-
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

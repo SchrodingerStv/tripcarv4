@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.example.steven.tripcar.CocheSelectFragment">
+    tools:context="com.example.steven.tripcar.models.CocheSelectFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <ImageView

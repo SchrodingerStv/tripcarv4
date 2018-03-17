@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.steven.tripcar.GestionReservasFragment">
+    tools:context="com.example.steven.tripcar.models.GestionReservasFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
