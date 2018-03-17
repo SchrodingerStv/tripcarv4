@@ -112,7 +112,7 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 Usuario usuario = new Usuario();
 
-                usuario.setEmail(  txtUserEmail.getText().toString());
+                usuario.setEmail(txtUserEmail.getText().toString());
                 usuario.setContrasenia(txtUserContrasenia.getText().toString());
 
                 obtenerUsuario(usuario);
@@ -207,18 +207,19 @@ public class LoginFragment extends Fragment {
         }
     }
 */
-    public void obtenerUsuario(Usuario usuario) {
+    public void obtenerUsuario(final Usuario usuario) {
 
         final ProgressDialog dialog = new ProgressDialog(getActivity());
+
         dialog.setMessage("Ingresando");
         dialog.show();
-        Call<Usuario> u = usuariosService.obtenerusario(usuario);
+        Call<Usuario> u = usuariosService.obtenerusario(usuario.getEmail(),usuario.getContrasenia());
         u.enqueue(new Callback<Usuario>() {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                 if(response.isSuccessful()){
 
-                    String usuarioEmail = response.body().getEmail();
+                    String usuarioEmail = usuario.getEmail();
                     Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Datos correctos,"+usuarioEmail, Toast.LENGTH_SHORT);
                     toast1.show();
                     NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
@@ -246,9 +247,10 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Usuario> call, Throwable t) {
+                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
+                toast1.show();
                 if (dialog.isShowing()) {
-                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
-                    toast1.show();
+
                     dialog.dismiss();
                 }
             }

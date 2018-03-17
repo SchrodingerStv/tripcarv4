@@ -8,11 +8,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 
@@ -26,6 +30,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import com.example.steven.tripcar.services.cochesService;
 
 
 /**
@@ -42,7 +55,11 @@ public class CochesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private List<Coche> listaCoches = new ArrayList<>();
+    RecyclerView rvClientes;
+    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    //private cochesAdapter adapter;
+    private MyAdapter myAdapter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -50,6 +67,7 @@ public class CochesFragment extends Fragment {
     private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Coches";
     private OnFragmentInteractionListener mListener;
     private ListView mListView;
+    private cochesService cochesService;
 
     public CochesFragment() {
         // Required empty public constructor
@@ -92,11 +110,48 @@ public class CochesFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_coches, container, false);
         mListView =(ListView)view.findViewById(R.id.listview);
-        TareaObtenerCoches tarea = new TareaObtenerCoches();
-        tarea.execute();
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+
+
+        //myAdapter = new MyAdapter(getActivity(),listaCoches);
+        //mListView.setAdapter(myAdapter);
+
+
+
+        cochesService = retrofit.create(cochesService.class);
+
+        Call<List<Coche>> lista = cochesService.obtenerCoches();
+        lista.enqueue(new Callback<List<Coche>>() {
+            @Override
+            public void onResponse(Call<List<Coche>> call, Response<List<Coche>> response) {
+                if(response.isSuccessful()){
+                    listaCoches = response.body();
+                    myAdapter = new MyAdapter(getActivity(),listaCoches);
+                    mListView.setAdapter(myAdapter);
+                    myAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Coche>> call, Throwable t) {
+                Toast.makeText(getActivity().getApplicationContext(),"aaaaaaaaaa",Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
+
+
+
+
 
         return view;
     }
+    /*
     private class TareaObtenerCoches extends AsyncTask<String,Integer,Boolean> {
 
         private String[] coches;
@@ -188,7 +243,7 @@ public class CochesFragment extends Fragment {
 
         }
     }
-
+*/
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

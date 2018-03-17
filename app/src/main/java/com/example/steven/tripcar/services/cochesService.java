@@ -3,17 +3,18 @@ package com.example.steven.tripcar.services;
 import com.example.steven.tripcar.models.Coche;
 import com.example.steven.tripcar.models.Usuario;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-/**
- * Created by Steven on 17/03/2018.
- */
 
 public interface cochesService {
-    @POST("api/Coches/")
-    Call<Coche> obtenerCoches();
-    @POST("api/Usuarios/")
-    Call<Coche> obtenerCoche(@Body String matricula );
+    @GET("api/coches/")
+    Call<List<Coche>> obtenerCoches();
+    @GET("api/coches/obtenerCoche/{matricula}")
+    Call<Coche> obtenerCoche(@Path("matricula") String matricula);
 }

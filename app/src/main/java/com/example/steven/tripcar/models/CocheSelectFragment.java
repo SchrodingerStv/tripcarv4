@@ -7,15 +7,19 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.example.steven.tripcar.services.cochesService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,7 +30,19 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.List;
+import java.util.Locale;
 
+import com.example.steven.tripcar.services.cochesService;
+import com.google.gson.Gson;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,7 +57,8 @@ public class CocheSelectFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    private  cochesService cochesService;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -85,9 +102,58 @@ public class CocheSelectFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_coche_select, container, false);
 
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-            TareaObtenerCoche tarea = new TareaObtenerCoche();
-            tarea.execute();
+
+
+
+        SharedPreferences prefe=getActivity().getSharedPreferences("Matricula", Context.MODE_PRIVATE);
+        String d=prefe.getString("Matricula", "");
+        Gson gson = new Gson();
+
+        final Coche  obj = gson.fromJson(d, Coche.class);
+        cochesService = retrofit.create(cochesService.class);
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        formatSymbols.setDecimalSeparator(',');
+        final DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+        Call<Coche> u = cochesService.obtenerCoche(obj.getMatricula());
+        u.enqueue(new Callback<Coche>() {
+            @Override
+            public void onResponse(Call<Coche> call, Response<Coche> response) {
+                if(response.isSuccessful()) {
+
+                    TextView txtMatricula = (TextView) getActivity().findViewById(R.id.matriculaSelect);
+                    TextView txtTamanio = (TextView) getActivity().findViewById(R.id.tamanioSelect);
+                    TextView txtPrecio = (TextView) getActivity().findViewById(R.id.precioSelect);
+                    TextView txtMarca = (TextView) getActivity().findViewById(R.id.marcaModeloSelect);
+                    txtMatricula.setText(obj.getMatricula());
+                    txtMarca.setText(obj.getMarcaModelo());
+                    txtPrecio.setText(df.format(obj.getPrecioDia())+"€");
+                    txtTamanio.setText(obj.getTamanio());
+                    InputStream srt = null;
+                    try {
+                        srt = new java.net.URL(obj.getImagen()).openStream();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Bitmap bit = BitmapFactory.decodeStream(srt);
+
+                    ImageView img = (ImageView) getActivity().findViewById(R.id.imagenCoche) ;
+
+                    img.setImageBitmap(bit);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Coche> call, Throwable t) {
+
+            }
+        });
+
 
 
 

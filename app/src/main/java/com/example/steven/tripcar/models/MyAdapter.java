@@ -3,6 +3,7 @@ package com.example.steven.tripcar.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -15,61 +16,76 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.steven.tripcar.R;
+import com.google.gson.Gson;
 
-public class MyAdapter extends ArrayAdapter<String>  {
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.List;
+import java.util.Locale;
+
+public class MyAdapter extends ArrayAdapter<Coche>  {
     Double[] precio;
     String[] marcamodelo;
     String[] tamanio;
     String[] matricula;
     Bitmap[] imagenes;
     Context mContext;
-    private String URL = "http://192.168.1.38/ServicioRestTripCar/Api/Coches";
-    public MyAdapter(Context context, String[] marcamodelo,String[] tamanio,String[] matricula, Double[] precio, Bitmap[] bitmaps) {
-        super(context, R.layout.listview_item);
-        this.matricula = matricula;
-        this.tamanio = tamanio;
-        this.marcamodelo = marcamodelo;
-        this.imagenes = bitmaps;
-        this.mContext = context;
-        this.precio = precio;
+    List<Coche> lista;
+    public MyAdapter(Context context,List<Coche> lista) {
+        super(context,0,lista);
+
+
     }
 
     @Override
-    public int getCount() {
-        return marcamodelo.length;
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Get the data item for this position
+        final Coche auto = getItem(position);
+        InputStream srt = null;
+        try {
+             srt = new java.net.URL(auto.getImagen()).openStream();
 
-    @NonNull
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-
-        ViewHolder mViewHolder = new ViewHolder();
-        if (convertView == null) {
-            LayoutInflater mInflater = (LayoutInflater) mContext.
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.listview_item, parent, false);
-
-            mViewHolder.mPrecio = (TextView) convertView.findViewById(R.id.precio);
-            mViewHolder.mImagen = (ImageView) convertView.findViewById(R.id.imageView);
-            mViewHolder.mName = (TextView) convertView.findViewById(R.id.marcaModelo);
-            mViewHolder.mtamanio = (TextView)convertView.findViewById(R.id.tamanio);
-            mViewHolder.matricula = (TextView) convertView.findViewById(R.id.matricula);
-            mViewHolder.mSleccionar = (Button)convertView.findViewById((R.id.seleccionarCoche));
-            convertView.setTag(mViewHolder);
-        } else {
-            mViewHolder = (ViewHolder) convertView.getTag();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        mViewHolder.mPrecio.setText(precio[position].toString()+"€");
-        mViewHolder.mImagen.setImageBitmap(imagenes[position]);
-        mViewHolder.mName.setText(marcamodelo[position]);
-        mViewHolder.mtamanio.setText(tamanio[position]);
-        mViewHolder.matricula.setText(matricula[position]);
-        Button btnSeleccionar = (Button)convertView.findViewById(R.id.seleccionarCoche);
-        btnSeleccionar.setOnClickListener(new View.OnClickListener() {
+       Bitmap bit = BitmapFactory.decodeStream(srt);
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        formatSymbols.setDecimalSeparator(',');
+        DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+        // Check if an existing view is being reused, otherwise inflate the view
+        ViewHolder viewHolder; // view lookup cache stored in tag
+        if (convertView == null) {
+            // If there's no view to re-use, inflate a brand new view for row
+
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.listview_item, parent, false);
+            viewHolder.mName = (TextView) convertView.findViewById(R.id.marcaModelo);
+            viewHolder.mtamanio = (TextView) convertView.findViewById(R.id.tamanio);
+            viewHolder.mPrecio = (TextView) convertView.findViewById(R.id.precio);
+            viewHolder.matricula = (TextView)convertView.findViewById(R.id.matricula);
+            viewHolder.mImagen = (ImageView) convertView.findViewById(R.id.imageView);
+            viewHolder.mSleccionar = (Button) convertView.findViewById(R.id.seleccionarCoche); 
+            // Cache the viewHolder object inside the fresh view
+            convertView.setTag(viewHolder);
+        } else {
+            // View is being recycled, retrieve the viewHolder object from tag
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        // Populate the data from the data object via the viewHolder object
+        // into the template view.
+        viewHolder.mName.setText(auto.getMarcaModelo());
+        viewHolder.matricula.setText(auto.getMatricula());
+        viewHolder.mPrecio.setText(df.format(auto.getPrecioDia())+"€");
+        viewHolder.mtamanio.setText(auto.getTamanio());
+        viewHolder.mImagen.setImageBitmap(bit);
+        viewHolder.mSleccionar.setOnClickListener(new View.OnClickListener() {
 
 
             public void onClick(View v) {
-                int pos = position;
+                
                 FragmentActivity fa = (FragmentActivity)(getContext());
 
                 SharedPreferences prefe=fa.getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
@@ -84,8 +100,11 @@ public class MyAdapter extends ArrayAdapter<String>  {
                     CocheSelectFragment coche =  new CocheSelectFragment();
                     FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
                     SharedPreferences preferencias= fa.getSharedPreferences("Matricula", Context.MODE_PRIVATE);
+                    Gson gson = new Gson();
+                    String json = gson.toJson(auto);
+
                     SharedPreferences.Editor editor=preferencias.edit();
-                    editor.putString("Matricula",matricula[pos]);
+                    editor.putString("Matricula",json);
                     editor.commit();
                     ft.replace(R.id.content_main,coche).addToBackStack(null).commit();
 
@@ -93,8 +112,10 @@ public class MyAdapter extends ArrayAdapter<String>  {
 
             }
         });
+        // Return the completed view to render on screen
         return convertView;
     }
+
 
 
     static class ViewHolder {
