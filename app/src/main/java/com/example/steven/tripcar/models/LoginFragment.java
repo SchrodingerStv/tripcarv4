@@ -53,7 +53,7 @@ public class LoginFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
     usuariosService usuariosService;
     private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario/";
     private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Usuarios/Usuario/";
@@ -124,10 +124,20 @@ public class LoginFragment extends Fragment {
         btnRegister.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View v) {
+                SharedPreferences prefe=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+                String d=prefe.getString("Email", "");
+                if (d.length()==0) {
+                    RegistroFragment fragment  = new RegistroFragment();
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                }
+                else {
 
-                RegistroFragment fragment  = new RegistroFragment();
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                   BienvenidoFragment fragment = new BienvenidoFragment();
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                }
+
 
 
             }

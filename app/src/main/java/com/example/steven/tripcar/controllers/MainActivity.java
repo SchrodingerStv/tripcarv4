@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
         TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
         nombre.setText("");
-        email.setText("user@user.com");
+        email.setText("Inicia sesion");
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -108,8 +108,20 @@ public class MainActivity extends AppCompatActivity
         Fragment currentFragment  = null;
         boolean fragmentSeleccionado =  false;
         if (id == R.id.nav_loing) {
-            currentFragment = new LoginFragment();
-            fragmentSeleccionado = true;
+            SharedPreferences prefe=getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+            String d=prefe.getString("Email", "");
+            if (d.length()==0) {
+                currentFragment = new LoginFragment();
+                fragmentSeleccionado = true;
+            }
+            else {
+
+                currentFragment = new BienvenidoFragment();
+                fragmentSeleccionado = true;
+
+            }
+
+
         } else if (id == R.id.nav_coches) {
             currentFragment = new CochesFragment();
             fragmentSeleccionado = true;
@@ -132,7 +144,7 @@ public class MainActivity extends AppCompatActivity
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 View headerView = navigationView.getHeaderView(0);
                 TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText("user@user.com");
+                email.setText("Inicia sesion");
                 TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
                 nombre.setText("");
                 navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);

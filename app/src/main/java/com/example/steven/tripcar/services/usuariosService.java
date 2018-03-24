@@ -13,6 +13,6 @@ import retrofit2.http.Path;
 public interface usuariosService {
     @POST("api/usuarios/")
     Call<Usuario> insertrUsuario(@Body Usuario usuario);
-    @GET("api/usuarios/obtenerUsuario/{email}/{contrasenia}")
+    @GET("api/usuarios/obtenerusuario/{email}/{contrasenia}")
     Call<Usuario> obtenerusario( @Path("email") String email, @Path("contrasenia")String contrasenia);
 }

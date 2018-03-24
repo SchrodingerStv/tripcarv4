@@ -57,7 +57,7 @@ public class CocheSelectFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
     private  cochesService cochesService;
     // TODO: Rename and change types of parameters
     private String mParam1;

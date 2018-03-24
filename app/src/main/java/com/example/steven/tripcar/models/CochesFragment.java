@@ -57,7 +57,7 @@ public class CochesFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private List<Coche> listaCoches = new ArrayList<>();
     RecyclerView rvClientes;
-    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
+    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
     //private cochesAdapter adapter;
     private MyAdapter myAdapter;
     // TODO: Rename and change types of parameters
@@ -138,7 +138,7 @@ public class CochesFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Coche>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),"aaaaaaaaaa",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(),"no funciona",Toast.LENGTH_LONG).show();
 
             }
         });
