@@ -1,35 +1,27 @@
 package com.example.steven.tripcar.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Coche {
 
-    @SerializedName("idCoche")
-    @Expose
-    private Integer idCoche;
-    @SerializedName("MarcaModelo")
-    @Expose
+
     private String marcaModelo;
-    @SerializedName("Tamanio")
-    @Expose
+
     private String tamanio;
-    @SerializedName("PrecioDia")
-    @Expose
+
     private Double precioDia;
-    @SerializedName("Imagen")
-    @Expose
-    private String imagen;
-    @SerializedName("Matricula")
-    @Expose
+
+    private String uriImagen;
+
     private String matricula;
 
-    public Integer getIdCoche() {
-        return idCoche;
-    }
+    public Coche(){
 
-    public void setIdCoche(Integer idCoche) {
-        this.idCoche = idCoche;
+    }
+    public Coche(String marcaModelo, String tamanio, Double precioDia, String uriImagen, String matricula) {
+        this.marcaModelo = marcaModelo;
+        this.tamanio = tamanio;
+        this.precioDia = precioDia;
+        this.uriImagen = uriImagen;
+        this.matricula = matricula;
     }
 
     public String getMarcaModelo() {
@@ -56,12 +48,12 @@ public class Coche {
         this.precioDia = precioDia;
     }
 
-    public String getImagen() {
-        return imagen;
+    public String getUriImagen() {
+        return uriImagen;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setUriImagen(String uriImagen) {
+        this.uriImagen = uriImagen;
     }
 
     public String getMatricula() {
@@ -71,5 +63,4 @@ public class Coche {
     public void setMatricula(String matricula) {
         this.matricula = matricula;
     }
-
 }

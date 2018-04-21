@@ -111,6 +111,7 @@ public class CochesFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_coches, container, false);
         mListView =(ListView)view.findViewById(R.id.listview);
 
+     /*
         Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -144,7 +145,7 @@ public class CochesFragment extends Fragment {
         });
 
 
-
+*/
 
 
 

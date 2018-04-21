@@ -7,16 +7,13 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.services.cochesService;
@@ -32,10 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
 import java.util.Locale;
 
-import com.example.steven.tripcar.services.cochesService;
 import com.google.gson.Gson;
 
 import retrofit2.Call;
@@ -134,7 +129,7 @@ public class CocheSelectFragment extends Fragment {
                     txtTamanio.setText(obj.getTamanio());
                     InputStream srt = null;
                     try {
-                        srt = new java.net.URL(obj.getImagen()).openStream();
+                        srt = new java.net.URL(obj.getUriImagen()).openStream();
 
                     } catch (IOException e) {
                         e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.example.steven.tripcar.controllers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.example.steven.tripcar.models.GestionReservasFragment;
 import com.example.steven.tripcar.models.LoginFragment;
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.RegistroFragment;
+import com.squareup.picasso.Picasso;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        Fragment fragment = new CochesFragment();
+        Fragment fragment = new LoginFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.content_main,fragment).commit();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
         TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
         nombre.setText("");
-        email.setText("Inicia sesion");
+        email.setText("Inicia sesión");
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -72,7 +74,10 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -144,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 View headerView = navigationView.getHeaderView(0);
                 TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText("Inicia sesion");
+                email.setText("Inicia sesión");
                 TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
                 nombre.setText("");
                 navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);

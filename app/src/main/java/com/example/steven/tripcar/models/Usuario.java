@@ -6,22 +6,62 @@ import com.google.gson.annotations.SerializedName;
 
 public class Usuario {
 
-    @SerializedName("Email")
-    @Expose
-    private String email;
-    @SerializedName("Nombre")
-    @Expose
-    private String nombre;
-    @SerializedName("Contrasenia")
-    @Expose
-    private String contrasenia;
-    @SerializedName("DNI")
-    @Expose
-    private Integer dNI;
-    @SerializedName("IdUsuario")
-    @Expose
-    private Integer idUsuario;
 
+     String email;
+
+     String contrasenia;
+
+     Integer DNI;
+
+     String imagenUri;
+
+    public String getImagenUri() {
+        return imagenUri;
+    }
+
+    public void setImagenUri(String imagenUri) {
+        this.imagenUri = imagenUri;
+    }
+
+    public Usuario(){
+
+    }
+
+    public Usuario(String email, String contrasenia, Integer DNI,String imagenUri) {
+        this.email = email;
+        this.contrasenia = contrasenia;
+        this.DNI = DNI;
+        this.imagenUri=imagenUri;
+
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setContrasenia(String contrasenia) {
+        this.contrasenia = contrasenia;
+    }
+
+    public void setDNI(Integer DNI) {
+        this.DNI = DNI;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getContrasenia() {
+        return contrasenia;
+    }
+
+    public Integer getDNI() {
+        return DNI;
+    }
+
+
+
+    /*
     public String getEmail() {
         return email;
     }
@@ -60,6 +100,7 @@ public class Usuario {
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
-    }
+    }*/
+
 
 }

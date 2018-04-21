@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -45,7 +44,7 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
         final Coche auto = getItem(position);
         InputStream srt = null;
         try {
-             srt = new java.net.URL(auto.getImagen()).openStream();
+             srt = new java.net.URL(auto.getUriImagen()).openStream();
 
         } catch (IOException e) {
             e.printStackTrace();

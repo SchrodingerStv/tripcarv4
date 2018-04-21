@@ -4,58 +4,74 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.steven.tripcar.models.RegistroFragment">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginLeft="60dp"
-        android:adjustViewBounds="false"
-        android:cropToPadding="false"
-        android:paddingTop="20dp"
-        android:src="@mipmap/tripcarlogo" />
 
-    <EditText
-        android:id="@+id/email"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="@string/Email" />
-    <EditText
-        android:id="@+id/nombre"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/Nombre" />
-    <EditText
-        android:id="@+id/contrasenia"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/Contraseña"
-        android:inputType="textPassword"
-        />
-    <EditText
-        android:id="@+id/dni"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="@string/DNI" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/registrarse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:text="@string/Registrarse"
-        android:textColor="@android:color/background_light" />
-    <Button
-        android:id="@+id/logearse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:text="@string/Ingresar"
-        android:textColor="@android:color/background_light" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginLeft="60dp"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            android:paddingTop="20dp"
+            android:src="@mipmap/tripcarlogo" />
+
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Email"
+            android:inputType="textEmailAddress" />
+
+        <EditText
+            android:id="@+id/contrasenia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Contraseña"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/dni"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/DNI"
+            android:inputType="number" />
+        <Button
+            android:id="@+id/elegir_imagen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="Buscar Imagen"
+            android:textColor="@android:color/background_light" />
+        <ImageView
+            android:id="@+id/imagenUsuario"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginLeft="55dp"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            android:paddingTop="20dp" />
+        <Button
+            android:id="@+id/registrarse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="@string/Registrarse"
+            android:textColor="@android:color/background_light" />
+
+        <Button
+            android:id="@+id/logearse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="@string/Ingresar"
+            android:textColor="@android:color/background_light" />
+
+
+    </LinearLayout>
 </ScrollView>
