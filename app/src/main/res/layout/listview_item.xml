@@ -10,8 +10,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginLeft="70dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:padding="5dp" />
     <TextView
         android:id="@+id/labelMarca"
@@ -73,10 +74,14 @@
         android:layout_marginTop="-27dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
     <Button
         android:id="@+id/seleccionarCoche"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Seleccionar coche" />
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:hint="Seleccionar coche"
+        android:text="Seleccionar coche"
+        android:textColor="@android:color/background_light" />
 
 </LinearLayout>

@@ -3,49 +3,49 @@ package com.example.steven.tripcar.models;
 public class Coche {
 
 
-    private String marcaModelo;
+    private String MarcaModelo;
 
-    private String tamanio;
+    private String Tamanio;
 
-    private Double precioDia;
+    private String PrecioHora;
 
     private String uriImagen;
 
-    private String matricula;
-
-    public Coche(){
+    private String Matricula;
+    public  Coche(){
 
     }
-    public Coche(String marcaModelo, String tamanio, Double precioDia, String uriImagen, String matricula) {
-        this.marcaModelo = marcaModelo;
-        this.tamanio = tamanio;
-        this.precioDia = precioDia;
+
+    public Coche(String marcaModelo, String tamanio, String precioHora, String uriImagen, String matricula) {
+        MarcaModelo = marcaModelo;
+        Tamanio = tamanio;
+        PrecioHora = precioHora;
         this.uriImagen = uriImagen;
-        this.matricula = matricula;
+        Matricula = matricula;
     }
 
     public String getMarcaModelo() {
-        return marcaModelo;
+        return MarcaModelo;
     }
 
     public void setMarcaModelo(String marcaModelo) {
-        this.marcaModelo = marcaModelo;
+        MarcaModelo = marcaModelo;
     }
 
     public String getTamanio() {
-        return tamanio;
+        return Tamanio;
     }
 
     public void setTamanio(String tamanio) {
-        this.tamanio = tamanio;
+        Tamanio = tamanio;
     }
 
-    public Double getPrecioDia() {
-        return precioDia;
+    public String getPrecioHora() {
+        return PrecioHora;
     }
 
-    public void setPrecioDia(Double precioDia) {
-        this.precioDia = precioDia;
+    public void setPrecioHora(String precioHora) {
+        PrecioHora = precioHora;
     }
 
     public String getUriImagen() {
@@ -57,10 +57,10 @@ public class Coche {
     }
 
     public String getMatricula() {
-        return matricula;
+        return Matricula;
     }
 
     public void setMatricula(String matricula) {
-        this.matricula = matricula;
+        Matricula = matricula;
     }
 }

@@ -1,15 +1,10 @@
 package com.example.steven.tripcar.models;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,25 +15,16 @@ import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import com.example.steven.tripcar.services.cochesService;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 
 /**
@@ -111,6 +97,8 @@ public class CochesFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_coches, container, false);
         mListView =(ListView)view.findViewById(R.id.listview);
 
+        obtenerCoches();
+
      /*
         Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -152,6 +140,48 @@ public class CochesFragment extends Fragment {
 
         return view;
     }
+
+    private void obtenerCoches(){
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final DatabaseReference ref = database.getReference(FirebaseReferences.COCHES_REFERENCE);
+
+
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+
+
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        Coche post =postSnapshot.getValue(Coche.class);
+                        Coche btChildDetails = new Coche(post.getMarcaModelo(),post.getTamanio(),post.getPrecioHora(),post.getUriImagen(),post.getMatricula());
+                        listaCoches.add(btChildDetails);
+
+                        myAdapter = new MyAdapter(getActivity(),listaCoches);
+                        mListView.setAdapter(myAdapter);
+                        myAdapter.notifyDataSetChanged();
+
+                    }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
     /*
     private class TareaObtenerCoches extends AsyncTask<String,Integer,Boolean> {
 

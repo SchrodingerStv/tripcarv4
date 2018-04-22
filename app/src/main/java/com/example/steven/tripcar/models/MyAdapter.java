@@ -50,6 +50,7 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
             e.printStackTrace();
         }
        Bitmap bit = BitmapFactory.decodeStream(srt);
+        double precioHora = Double.parseDouble(auto.getPrecioHora());
         DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
         formatSymbols.setDecimalSeparator(',');
         DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
@@ -77,7 +78,7 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
         // into the template view.
         viewHolder.mName.setText(auto.getMarcaModelo());
         viewHolder.matricula.setText(auto.getMatricula());
-        viewHolder.mPrecio.setText(df.format(auto.getPrecioDia())+"€");
+        viewHolder.mPrecio.setText(df.format(precioHora) + " €");
         viewHolder.mtamanio.setText(auto.getTamanio());
         viewHolder.mImagen.setImageBitmap(bit);
         viewHolder.mSleccionar.setOnClickListener(new View.OnClickListener() {
@@ -98,12 +99,12 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
 
                     CocheSelectFragment coche =  new CocheSelectFragment();
                     FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                    SharedPreferences preferencias= fa.getSharedPreferences("Matricula", Context.MODE_PRIVATE);
+                    SharedPreferences preferencias= fa.getSharedPreferences("Coche", Context.MODE_PRIVATE);
                     Gson gson = new Gson();
                     String json = gson.toJson(auto);
 
                     SharedPreferences.Editor editor=preferencias.edit();
-                    editor.putString("Matricula",json);
+                    editor.putString("Coche",json);
                     editor.commit();
                     ft.replace(R.id.content_main,coche).addToBackStack(null).commit();
 
