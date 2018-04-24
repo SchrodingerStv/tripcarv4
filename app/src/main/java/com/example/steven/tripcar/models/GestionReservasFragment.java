@@ -1,14 +1,31 @@
 package com.example.steven.tripcar.models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.gson.Gson;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -30,6 +47,11 @@ public class GestionReservasFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private List<usuarioCocheReserva> listaReservas = new ArrayList<>();
+    private   ListView mListView;
+
+    private MyAdapterReservas myAdapterReservas;
 
     public GestionReservasFragment() {
         // Required empty public constructor
@@ -66,9 +88,82 @@ public class GestionReservasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gestion_reservas, container, false);
-    }
+        final View view = inflater.inflate(R.layout.fragment_gestion_reservas, container, false);
+        mListView = (ListView) view.findViewById(R.id.listReservasview);
+        obtenerReservas();
 
+        return view;
+    }
+    private void obtenerReservas(){
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+
+        SharedPreferences prefe=getActivity().getSharedPreferences("Coche", Context.MODE_PRIVATE);
+        SharedPreferences prefeU=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+        final String u=prefeU.getString("Email", "");
+        String d=prefe.getString("Coche", "");
+        Gson gson = new Gson();
+
+        final Coche  obj = gson.fromJson(d, Coche.class);
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        formatSymbols.setDecimalSeparator(',');
+        final DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+
+
+
+        ref.orderByChild("usuario").equalTo(u).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final DatabaseReference refcoche = database.getReference(FirebaseReferences.COCHES_REFERENCE);
+
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    final usuarioCocheReserva post = postSnapshot.getValue(usuarioCocheReserva.class);
+                    refcoche.orderByChild("Matricula").equalTo(post.getCoche()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                                final Coche coche = postSnapshot.getValue(Coche.class);
+                                usuarioCocheReserva btChildDetails = new usuarioCocheReserva(post.getfInicio(),post.getfFinal(),post.getUsuario(),post.getCoche(),post.getPrecioTotal(),coche.getMarcaModelo(),
+                                        coche.getTamanio(),coche.getPrecioHora(),coche.getUriImagen(),coche.getMatricula());
+                                listaReservas.add(btChildDetails);
+
+                                myAdapterReservas= new MyAdapterReservas(getActivity(),listaReservas);
+                                mListView.setAdapter(myAdapterReservas);
+                                myAdapterReservas.notifyDataSetChanged();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

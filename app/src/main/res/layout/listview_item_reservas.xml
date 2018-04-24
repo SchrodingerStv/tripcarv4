@@ -1,26 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.example.steven.tripcar.models.CocheSelectFragment">
+    android:focusableInTouchMode="false"
+    android:focusable="false">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <ImageView
-        android:id="@+id/imagenCoche"
+        android:id="@+id/imageViewR"
         android:layout_marginLeft="70dp"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        />
+        android:padding="5dp" />
     <TextView
-        android:id="@+id/labelMarcaSelect"
+        android:id="@+id/labelMarca"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Marca:"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/marcaModeloSelect"
+        android:id="@+id/marcaModeloR"
         android:layout_width="219dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="70dp"
@@ -28,14 +30,14 @@
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
     <TextView
-        android:id="@+id/labelTamanioSelect"
+        android:id="@+id/labelTamanio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tamaño:"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/tamanioSelect"
+        android:id="@+id/tamanioR"
         android:layout_width="219dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="80dp"
@@ -43,84 +45,74 @@
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
     <TextView
-        android:id="@+id/labelPrecioSelect"
+        android:id="@+id/labelPrecio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Precio:"
+        android:text="Precio total:"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/precioSelect"
+        android:id="@+id/precioR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="65dp"
+        android:layout_marginLeft="110dp"
         android:layout_marginTop="-27dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
     <TextView
-        android:id="@+id/labelMatriculaSelect"
+        android:id="@+id/labelMatricula"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Matricula:"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/matriculaSelect"
+        android:id="@+id/matriculaR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="93dp"
         android:layout_marginTop="-27dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-    <EditText
-        android:id="@+id/fechaInicial"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
-
-    <EditText
-        android:id="@+id/fechaFin"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="265dp"
-        android:layout_marginTop="-45dp"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/horaInicial"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
-
-    <EditText
-        android:id="@+id/horaFin"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="265dp"
-        android:layout_marginTop="-44dp"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/Reservar"
+    <TextView
+        android:id="@+id/lableFHI"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reservar"
+        android:text="Fecha inicial:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/fecaHoraInicial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="-27dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+    <TextView
+        android:id="@+id/labelFHF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fecha final:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/fechaHoraFinal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="-27dp"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+
+    <Button
+        android:id="@+id/cancelar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimaryDark"
-        android:textColor="@android:color/background_light"/>
-
-
+        android:hint="Cancelar reserva"
+        android:text="Cancelar reserva"
+        android:textColor="@android:color/background_light" />
 
 </LinearLayout>

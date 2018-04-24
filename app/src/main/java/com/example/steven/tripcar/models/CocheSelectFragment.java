@@ -67,14 +67,13 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
     private  cochesService cochesService;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private EditText fInicial,hinicial;
-    private Button fIni;
-    private Button hIni;
+    private EditText fInicial,hinicial,fFinal,hFinal;
+    private Button reservar;
+
     private int dia,mes,ano,hora,minutos;
 
     private OnFragmentInteractionListener mListener;
@@ -118,6 +117,8 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
 
         SharedPreferences prefe=getActivity().getSharedPreferences("Coche", Context.MODE_PRIVATE);
+        SharedPreferences prefeU=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+        final String u=prefeU.getString("Email", "");
         String d=prefe.getString("Coche", "");
         Gson gson = new Gson();
 
@@ -169,142 +170,49 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
             }
         });
 
-        fIni = (Button) view.findViewById(R.id.fechaIni);
-        hIni = (Button) view.findViewById(R.id.horaIni);
+        reservar = (Button) view.findViewById(R.id.Reservar);
+
         fInicial = (EditText) view.findViewById(R.id.fechaInicial);
         hinicial = (EditText) view.findViewById(R.id.horaInicial);
+
+        fFinal = (EditText) view.findViewById(R.id.fechaFin);
+        hFinal = (EditText) view.findViewById(R.id.horaFin);
 
         fInicial.setOnClickListener(this);
 
         hinicial.setOnClickListener(this);
 
+        fFinal.setOnClickListener(this);
+
+        hFinal.setOnClickListener(this);
 
 
 
-
-
-        /*
-        Call<Coche> u = cochesService.obtenerCoche(obj.getMatricula());
-        u.enqueue(new Callback<Coche>() {
+        reservar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<Coche> call, Response<Coche> response) {
-                if(response.isSuccessful()) {
+            public void onClick(View v) {
 
-                    TextView txtMatricula = (TextView) getActivity().findViewById(R.id.matriculaSelect);
-                    TextView txtTamanio = (TextView) getActivity().findViewById(R.id.tamanioSelect);
-                    TextView txtPrecio = (TextView) getActivity().findViewById(R.id.precioSelect);
-                    TextView txtMarca = (TextView) getActivity().findViewById(R.id.marcaModeloSelect);
-                    txtMatricula.setText(obj.getMatricula());
-                    txtMarca.setText(obj.getMarcaModelo());
-                    txtPrecio.setText(df.format(obj.getPrecioHora())+"€");
-                    txtTamanio.setText(obj.getTamanio());
-                    InputStream srt = null;
-                    try {
-                        srt = new java.net.URL(obj.getUriImagen()).openStream();
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+                    Reserva reserva = new Reserva(fInicial.getText() + " " + hinicial.getText(),fFinal.getText() + " " + hFinal.getText(),u,obj.getMatricula(),"100");
+                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada" , Toast.LENGTH_SHORT);
+                    toast2.show();
+                    ref.push().setValue(reserva);
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Bitmap bit = BitmapFactory.decodeStream(srt);
 
-                    ImageView img = (ImageView) getActivity().findViewById(R.id.imagenCoche) ;
-
-                    img.setImageBitmap(bit);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Coche> call, Throwable t) {
 
             }
         });
 
-*/
+
+
+
+
 
         return  view;
     }
-    /*
-    private class TareaObtenerCoche extends AsyncTask<String,Integer,Boolean> {
 
-
-        private String matricula;
-        private String imagen;
-        private Bitmap bitmap;
-        private InputStream srt = null;
-        private String marcamodelo;
-        private String  tamanio;
-        private Double decimal;
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean result = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            //String matricula = params[0];
-
-            SharedPreferences prefe=getActivity().getSharedPreferences("Matricula", Context.MODE_PRIVATE);
-            String d=prefe.getString("Matricula", "");
-            HttpGet del = new HttpGet("http://192.168.1.38/ServicioRestTripCar/Api/Coches/Coche/" +d);
-
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONObject respJSON = new JSONObject(respStr);
-
-                marcamodelo = respJSON.getString("MarcaModelo");
-
-                tamanio = respJSON.getString("Tamanio");
-
-                imagen  = respJSON.getString("Imagen");
-
-                matricula  = respJSON.getString("Matricula");
-
-                decimal  = respJSON.getDouble("PrecioDia");
-
-
-                try {
-                    srt = new java.net.URL(imagen).openStream();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                bitmap = BitmapFactory.decodeStream(srt);
-
-
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                result = false;
-            }
-
-            return result;
-        }
-        protected void onPostExecute(Boolean result) {
-
-            if (result) {
-
-                TextView txtMatricula = (TextView) getActivity().findViewById(R.id.matriculaSelect);
-                TextView txtTamanio = (TextView) getActivity().findViewById(R.id.tamanioSelect);
-                TextView txtPrecio = (TextView) getActivity().findViewById(R.id.marcaModeloSelect);
-                TextView txtMarca = (TextView) getActivity().findViewById(R.id.precioSelect);
-                txtMatricula.setText(matricula);
-                txtMarca.setText(marcamodelo);
-                txtPrecio.setText(decimal.toString());
-                txtTamanio.setText(tamanio);
-                ImageView img = (ImageView) getActivity().findViewById(R.id.imagenCoche) ;
-                img.setImageBitmap(bitmap);
-
-            }
-        }
-    }
-    */
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -331,15 +239,13 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        final Calendar calendario = Calendar.getInstance();
+        final int yy = calendario.get(Calendar.YEAR);
+        final int mm = calendario.get(Calendar.MONTH);
+        final int dd = calendario.get(Calendar.DAY_OF_MONTH);
+        final int hora = calendario.get(Calendar.HOUR_OF_DAY);
+        final int minutos = calendario.get(Calendar.MINUTE);
         if (v == fInicial) {
-
-
-
-            final Calendar calendario = Calendar.getInstance();
-            final int yy = calendario.get(Calendar.YEAR);
-            final int mm = calendario.get(Calendar.MONTH);
-            final int dd = calendario.get(Calendar.DAY_OF_MONTH);
-
 
             DatePickerDialog datePicker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
@@ -364,15 +270,63 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
         if(v==hinicial){
 
 
-            final Calendar calendario = Calendar.getInstance();
-            final int hora = calendario.get(Calendar.HOUR_OF_DAY);
-            final int minutos = calendario.get(Calendar.MINUTE);
             //final int segundos = calendario.get(Calendar.SECOND);
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     String hora = hourOfDay + ":" + minute;
                     hinicial.setText(hora);
+                }
+            },hora,minutos,true);
+            timePickerDialog.show();
+        }
+
+
+
+        if(v==fFinal){
+
+
+
+
+            DatePickerDialog datePicker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                    if(year< yy || dayOfMonth<dd || monthOfYear<mm ){
+
+                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                        toast2.show();
+                    }
+                    else{
+
+                        String fecha = String.valueOf(year) +"-"+String.valueOf(monthOfYear+1)
+                                +"-"+String.valueOf(dayOfMonth);
+                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "fechas"+fecha+"   "+fInicial.getText() , Toast.LENGTH_SHORT);
+                        toast2.show();
+                        if(fecha.equals(fInicial.getText().toString())){
+                            fFinal.setText(fecha);
+                        }
+
+                    }
+
+                }
+            }, yy, mm, dd);
+
+            datePicker.show();
+        }
+
+        if(v==hFinal){
+
+
+            //final int segundos = calendario.get(Calendar.SECOND);
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    String hora = hourOfDay + ":" + minute;
+
+                        hFinal.setText(hora);
+
+
                 }
             },hora,minutos,true);
             timePickerDialog.show();

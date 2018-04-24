@@ -42,15 +42,11 @@ public class CochesFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private List<Coche> listaCoches = new ArrayList<>();
-    RecyclerView rvClientes;
-    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
-    //private cochesAdapter adapter;
+
     private MyAdapter myAdapter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String URL = "http://192.168.1.38/ServicioRestTripCar/Api/Coches";
-    private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Coches";
     private OnFragmentInteractionListener mListener;
     private ListView mListView;
     private cochesService cochesService;
@@ -99,43 +95,6 @@ public class CochesFragment extends Fragment {
 
         obtenerCoches();
 
-     /*
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-
-
-        //myAdapter = new MyAdapter(getActivity(),listaCoches);
-        //mListView.setAdapter(myAdapter);
-
-
-
-        cochesService = retrofit.create(cochesService.class);
-
-        Call<List<Coche>> lista = cochesService.obtenerCoches();
-        lista.enqueue(new Callback<List<Coche>>() {
-            @Override
-            public void onResponse(Call<List<Coche>> call, Response<List<Coche>> response) {
-                if(response.isSuccessful()){
-                    listaCoches = response.body();
-                    myAdapter = new MyAdapter(getActivity(),listaCoches);
-                    mListView.setAdapter(myAdapter);
-                    myAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Coche>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),"no funciona",Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-
-*/
-
-
 
 
         return view;
@@ -154,8 +113,6 @@ public class CochesFragment extends Fragment {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-
 
 
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -182,99 +139,7 @@ public class CochesFragment extends Fragment {
 
     }
 
-    /*
-    private class TareaObtenerCoches extends AsyncTask<String,Integer,Boolean> {
 
-        private String[] coches;
-        private Bitmap[] bits;
-        private String[] img;
-        private String [] marcamodelo;
-        private String [] matricula;
-        private String [] tamanio;
-        private Double[] decimal;
-        private InputStream srt = null;
-        private Bitmap[] imagen = null;
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean result = true;
-
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpGet del =
-                    new HttpGet(URL);
-
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONArray respJSON = new JSONArray(respStr);
-
-                coches = new String[respJSON.length()];
-                img = new String[respJSON.length()];
-                bits = new Bitmap[respJSON.length()];
-                imagen  =  new Bitmap[respJSON.length()];
-                marcamodelo = new String[respJSON.length()];
-                tamanio = new String[respJSON.length()];
-                matricula = new String[respJSON.length()];
-                decimal = new Double[respJSON.length()];
-                for(int i=0; i<respJSON.length(); i++)
-                {
-                    JSONObject obj = respJSON.getJSONObject(i);
-                    String marca = obj.getString("MarcaModelo");
-                    marcamodelo[i] = marca;
-                    String tamanyo = obj.getString("Tamanio");
-                    tamanio[i] = tamanyo;
-                    String imagenes  = obj.getString("Imagen");
-                    img[i] = imagenes;
-                    String matric  = obj.getString("Matricula");
-                    matricula[i]=matric;
-                    Double decim  = obj.getDouble("PrecioDia");
-                    decimal[i]=decim;
-
-                    try {
-                        srt = new java.net.URL(img[i]).openStream();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    bits[i] = BitmapFactory.decodeStream(srt);
-
-
-                    imagen[i] = bits[i];
-                }
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                result = false;
-            }
-
-            return result;
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-            if (result)
-            {
-
-                //ImageView image = (ImageView)getActivity().findViewById(R.id.imagenView);
-                //image.setImageBitmap(imagen[1]);
-                MyAdapter myAdapter = new MyAdapter(getActivity(), marcamodelo,tamanio,matricula,decimal, imagen);
-                mListView.setAdapter(myAdapter);
-
-
-
-            }
-
-
-        }
-    }
-*/
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

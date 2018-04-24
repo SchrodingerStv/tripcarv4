@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -203,14 +206,16 @@ public class LoginFragment extends Fragment {
                     View headerView = navigationView.getHeaderView(0);
                     TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
                     email.setText(usuario.email);
-                    ImageView imagenUsuario = (ImageView) headerView.findViewById(R.id.imageView);
+                    LinearLayout imagenUsuario = (LinearLayout) headerView.findViewById(R.id.side_nav);
                     InputStream srt = null;
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         Usuario post =postSnapshot.getValue(Usuario.class);
                         Usuario btChildDetails = new Usuario(post.getEmail(),post.getContrasenia(),post.getDNI(),post.getImagenUri());
                         if(btChildDetails.getContrasenia().toString().equals(usuario.contrasenia) ){
-                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Bienvenido, "+btChildDetails.email, Toast.LENGTH_SHORT);
+
+                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Bienvenido, "+btChildDetails.email, Toast.LENGTH_LONG);
                             toast1.show();
+
                             Bitmap bitmap = null;
 
                             try {
@@ -221,10 +226,10 @@ public class LoginFragment extends Fragment {
                                 Log.e("aaa", e.getMessage());
                             }
                             int dimensionInPixel = 200;
-                            imagenUsuario.getLayoutParams().height = dimensionInPixel;
-                            imagenUsuario.getLayoutParams().width = dimensionInPixel;
-                            imagenUsuario.requestLayout();
-                            imagenUsuario.setImageBitmap(bitmap);
+
+
+                            Drawable d = new BitmapDrawable(getResources(), bitmap);
+                            imagenUsuario.setBackground(d);
                             navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
                             navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
                             SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
@@ -236,7 +241,7 @@ public class LoginFragment extends Fragment {
                             transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
 
                         }else{
-                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_SHORT);
+                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_LONG);
                             toast1.show();
                         }
 

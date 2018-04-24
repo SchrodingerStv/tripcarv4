@@ -173,33 +173,8 @@ public class RegistroFragment extends Fragment {
 
 
 
-       /* Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        usuariosService = retrofit.create(usuariosService.class);
-
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                    Usuario usuario = new Usuario();
-                    usuario.setNombre( txtNombre.getText().toString());
-                    usuario.setDNI(Integer.parseInt(txtDNI.getText().toString()));
-                    usuario.setEmail( txtEmail.getText().toString() );
-                    usuario.setContrasenia(txtContrasenia.getText().toString());
-                    insertarUsuario(usuario);
 
 
-            }
-        });
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                LoginFragment fragment  = new LoginFragment();
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-            }
-        });*/
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
@@ -247,7 +222,7 @@ public class RegistroFragment extends Fragment {
                 Boolean existe = dataSnapshot.exists();
                 if(existe){
 
-                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Error al registrarse el usuario ya existe", Toast.LENGTH_SHORT);
+                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Error al registrarse el usuario ya existe", Toast.LENGTH_LONG);
                     toast1.show();
 
                 }
@@ -258,7 +233,7 @@ public class RegistroFragment extends Fragment {
                             String url = taskSnapshot.getDownloadUrl().toString();
                             usuario.setImagenUri(url);
                             ref.push().setValue(usuario);
-                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Registro con exito", Toast.LENGTH_SHORT);
+                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Registro con exito", Toast.LENGTH_LONG);
                             toast1.show();
                             LoginFragment fragment  = new LoginFragment();
                             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -280,98 +255,6 @@ public class RegistroFragment extends Fragment {
     }
 
 
-    /*
-    private class TareaInsertarUsuario extends AsyncTask<String,Integer,Boolean> {
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean result = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpPost post = new HttpPost(URL);
-            post.setHeader("content-type", "application/json");
-
-            try {
-                //Construimos el objeto cliente en formato JSON
-                JSONObject dato = new JSONObject();
-
-                //dato.put("Id", Integer.parseInt(txtId.getText().toString()));
-                dato.put("email", params[0]);
-                dato.put("nombre", params[1]);
-                dato.put("contrasenia", params[2]);
-                dato.put("dni", Integer.parseInt(params[3]));
-
-                StringEntity entity = new StringEntity(dato.toString());
-                post.setEntity(entity);
-
-                HttpResponse resp = httpClient.execute(post);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                if (!respStr.equals("true"))
-                    result = false;
-            } catch (Exception ex) {
-                Log.e("ServicioRest", "Error!", ex);
-                result = false;
-            }
-
-            return result;
-        }
-        protected void onPostExecute(Boolean result) {
-
-            if (result) {
-                Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Registro con exito", Toast.LENGTH_SHORT);
-                toast1.show();
-                LoginFragment fragment  = new LoginFragment();
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-
-
-            } else {
-                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Error al registrarse", Toast.LENGTH_SHORT);
-                toast1.show();
-
-            }
-        }
-    }
-*/
-/*
-    public void insertarUsuario(Usuario usuario) {
-
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setMessage("Registrando");
-        dialog.show();
-        Call<Usuario> u = usuariosService.insertrUsuario(usuario);
-        u.enqueue(new Callback<Usuario>() {
-            @Override
-            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
-                if(response.isSuccessful()){
-                    //Usuario pacienteResponse = response.body();
-                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Registro con exito", Toast.LENGTH_SHORT);
-                    toast1.show();
-                    LoginFragment fragment  = new LoginFragment();
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-
-                }
-                if(dialog.isShowing()){
-                    dialog.dismiss();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Usuario> call, Throwable t) {
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-
-                }
-            }
-        });
-    }
-*/
-
-    //Registro con Firebase
 
 
     // TODO: Rename method, update argument and hook method into UI event

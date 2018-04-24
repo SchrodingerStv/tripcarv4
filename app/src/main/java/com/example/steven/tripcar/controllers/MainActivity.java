@@ -3,9 +3,11 @@ package com.example.steven.tripcar.controllers;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,9 @@ import com.example.steven.tripcar.models.LoginFragment;
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.RegistroFragment;
 import com.squareup.picasso.Picasso;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -154,8 +160,17 @@ public class MainActivity extends AppCompatActivity
                 nombre.setText("");
                 navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
-
-                Toast toast1 =Toast.makeText(getApplicationContext(),"Sesión cerrada", Toast.LENGTH_SHORT);
+                Uri path = Uri.parse("android.resource://drawable/" + R.drawable.background);
+                LinearLayout linearLayout = (LinearLayout) headerView.findViewById(R.id.side_nav);
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(path);
+                    Drawable yourDrawable = Drawable.createFromStream(inputStream, path.toString());
+                    linearLayout.setBackground(yourDrawable);
+                } catch (FileNotFoundException e) {
+                    Drawable yourDrawable = getResources().getDrawable(R.drawable.background);
+                    linearLayout.setBackground(yourDrawable);
+                }
+                Toast toast1 =Toast.makeText(getApplicationContext(),"Sesión cerrada", Toast.LENGTH_LONG);
                 toast1.show();
                 currentFragment = new LoginFragment();
                 fragmentSeleccionado = true;
@@ -171,6 +186,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public String getURLForResource (int resourceId) {
+        return Uri.parse("android.resource://"+R.class.getPackage().getName()+"/" +resourceId).toString();
     }
 
     @Override
