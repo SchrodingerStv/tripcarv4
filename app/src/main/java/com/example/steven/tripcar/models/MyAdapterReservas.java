@@ -16,6 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -86,7 +93,7 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
 
             public void onClick(View v) {
                 
-                FragmentActivity fa = (FragmentActivity)(getContext());
+                final FragmentActivity fa = (FragmentActivity)(getContext());
 
                 SharedPreferences prefe=fa.getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
                 String d=prefe.getString("Email", "");
@@ -96,17 +103,28 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
                     ft.replace(R.id.content_main,f).commit();
                 }
                 else {
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+                    ref.orderByChild("idReserva").equalTo(usaRC.getIdReserva()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot child: dataSnapshot.getChildren()) {
+                                ref.child(child.getKey()).removeValue();
+                                Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
+                                toast2.show();
+                            }
+                            GestionReservasFragment f = new GestionReservasFragment();
+                            FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
+                            ft.replace(R.id.content_main,f).commit();
+                        }
 
-                    CocheSelectFragment coche =  new CocheSelectFragment();
-                    FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                    SharedPreferences preferencias= fa.getSharedPreferences("Coche", Context.MODE_PRIVATE);
-                    Gson gson = new Gson();
-                    String json = gson.toJson(usaRC);
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    SharedPreferences.Editor editor=preferencias.edit();
-                    editor.putString("Coche",json);
-                    editor.commit();
-                    ft.replace(R.id.content_main,coche).addToBackStack(null).commit();
+                        }
+                    });
+
+
 
                 }
 

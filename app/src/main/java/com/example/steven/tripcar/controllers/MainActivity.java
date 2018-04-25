@@ -162,14 +162,10 @@ public class MainActivity extends AppCompatActivity
                 navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
                 Uri path = Uri.parse("android.resource://drawable/" + R.drawable.background);
                 LinearLayout linearLayout = (LinearLayout) headerView.findViewById(R.id.side_nav);
-                try {
-                    InputStream inputStream = getContentResolver().openInputStream(path);
-                    Drawable yourDrawable = Drawable.createFromStream(inputStream, path.toString());
-                    linearLayout.setBackground(yourDrawable);
-                } catch (FileNotFoundException e) {
-                    Drawable yourDrawable = getResources().getDrawable(R.drawable.background);
-                    linearLayout.setBackground(yourDrawable);
-                }
+
+                Drawable yourDrawable = getResources().getDrawable(R.drawable.background);
+                linearLayout.setBackground(yourDrawable);
+
                 Toast toast1 =Toast.makeText(getApplicationContext(),"Sesión cerrada", Toast.LENGTH_LONG);
                 toast1.show();
                 currentFragment = new LoginFragment();

@@ -39,6 +39,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -194,12 +195,25 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     FirebaseStorage storage = FirebaseStorage.getInstance();
-                    final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
-                    Reserva reserva = new Reserva(fInicial.getText() + " " + hinicial.getText(),fFinal.getText() + " " + hFinal.getText(),u,obj.getMatricula(),"100");
-                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada" , Toast.LENGTH_SHORT);
-                    toast2.show();
-                    ref.push().setValue(reserva);
 
+                    final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+                    ref.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            Reserva reserva = new Reserva(fInicial.getText() + " " + hinicial.getText(), fFinal.getText() + " " + hFinal.getText(), u, obj.getMatricula(), "100", UUID.randomUUID().toString() );
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada", Toast.LENGTH_LONG);
+                            toast2.show();
+                            ref.push().setValue(reserva);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
 
             }
