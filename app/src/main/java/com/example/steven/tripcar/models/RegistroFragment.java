@@ -1,18 +1,16 @@
 package com.example.steven.tripcar.models;
 
-import android.app.ProgressDialog;
-import android.app.Service;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,63 +19,34 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.example.steven.tripcar.R;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import static android.app.Activity.RESULT_OK;
-import com.example.steven.tripcar.services.usuariosService;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
+import static android.app.Activity.RESULT_OK;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RegistroFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RegistroFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
+
 public class RegistroFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
+
     private EditText txtEmail;
     private EditText txtNombre;
     private EditText txtDNI;
     private EditText txtContrasenia;
-    Comunicator comunicator;
-    usuariosService usuariosService;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -85,7 +54,7 @@ public class RegistroFragment extends Fragment {
     //imagen
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri mImageUri;
-    private ImageView mImageView;
+    private de.hdodenhof.circleimageview.CircleImageView mImageView;
     //private Button mButtonImagen;
 
 
@@ -132,28 +101,37 @@ public class RegistroFragment extends Fragment {
         Button btnRegister = (Button) view.findViewById(R.id.registrarse);
         Button btnLogin = (Button)view.findViewById(R.id.logearse);
         txtEmail = (EditText) view.findViewById(R.id.email);
-       // txtNombre = (EditText) view.findViewById(R.id.nombre);
+
         txtDNI = (EditText) view.findViewById(R.id.dni);
         txtContrasenia = (EditText) view.findViewById(R.id.contrasenia);
-        mImageView = (ImageView) view.findViewById(R.id.imagenUsuario);
+        mImageView = (de.hdodenhof.circleimageview.CircleImageView) view.findViewById(R.id.imagenUsuario);
 
 
         //imagen
         mButtonImagen.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+                if(ActivityCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                {
+                    requestPermissions(
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            2000);
+                }
+                else {
+                    captureImage();
+                }
             }
+
+
         });
         //firebase
         btnRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                if (txtDNI.getText().toString().equals("") ){
-                    RegistroFragment fragment  = new RegistroFragment();
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                if (txtDNI.getText().toString().equals("") || txtEmail.getText().toString().equals("") ||  txtContrasenia.getText().toString().equals("")){
+                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Rellene todos los datos", Toast.LENGTH_LONG);
+                    toast1.show();
                 }
                 else{
                     Usuario usuario = new Usuario();
@@ -171,10 +149,6 @@ public class RegistroFragment extends Fragment {
 
 
 
-
-
-
-
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
@@ -188,28 +162,36 @@ public class RegistroFragment extends Fragment {
 
         return view;
     }
+    private void captureImage() {
+        Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
+
+        if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(cameraIntent, PICK_IMAGE_REQUEST);
+        }
+    }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //mImageView = (ImageView) getActivity().findViewById(R.id.imagenUsuario);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            mImageUri = data.getData();
-            try {
-                Bitmap bitmap =  MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageUri);
-                mImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(resultCode == RESULT_OK) {
+                if(requestCode == PICK_IMAGE_REQUEST){
+                     mImageUri = data.getData();
+                    Bitmap bitmapImage = null;
+                    try {
+                        bitmapImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageUri);
+                        mImageView.setImageBitmap(bitmapImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
 
 
-            //Picasso.with(getActivity().getApplication()).load(mImageUri).into(mImageView);
-
-        }
     }
+
 
     private void registrar(final Usuario usuario){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -227,19 +209,31 @@ public class RegistroFragment extends Fragment {
 
                 }
                 else{
-                    refImag.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            String url = taskSnapshot.getDownloadUrl().toString();
-                            usuario.setImagenUri(url);
-                            ref.push().setValue(usuario);
-                            Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Registro con exito", Toast.LENGTH_LONG);
-                            toast1.show();
-                            LoginFragment fragment  = new LoginFragment();
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-                        }
-                    });
+                    if(mImageUri!=null){
+                        refImag.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                String url = taskSnapshot.getDownloadUrl().toString();
+                                usuario.setImagenUri(url);
+                                ref.push().setValue(usuario);
+                                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Registro con exito", Toast.LENGTH_LONG);
+                                toast1.show();
+                                LoginFragment fragment  = new LoginFragment();
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                            }
+                        });
+                    }
+                    else {
+                        usuario.setImagenUri("");
+                        ref.push().setValue(usuario);
+                        Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Registro con exito", Toast.LENGTH_LONG);
+                        toast1.show();
+                        LoginFragment fragment  = new LoginFragment();
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
+                    }
+
 
                 }
             }
@@ -297,7 +291,6 @@ public class RegistroFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    public interface Comunicator{
-        void insertarUsuario(Usuario usario);
-    }
+
+
 }

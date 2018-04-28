@@ -1,6 +1,5 @@
 package com.example.steven.tripcar.models;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,10 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -21,12 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.example.steven.tripcar.controllers.MainActivity;
 import com.example.steven.tripcar.services.usuariosService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,26 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import static android.app.Activity.RESULT_OK;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,10 +55,6 @@ public class LoginFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String  baseUrl= "http://10.111.60.105/SWTRIPCAR/";
-    usuariosService usuariosService;
-    private String  URL= "http://192.168.1.38/ServicioRestTripCar/Api/Usuarios/Usuario/";
-    private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Usuarios/Usuario/";
     private EditText txtUserEmail;
     private String contrasenia;
     private String email;
@@ -123,23 +101,6 @@ public class LoginFragment extends Fragment {
         txtUserEmail = (EditText) view.findViewById(R.id.Email);
         txtUserContrasenia = (EditText) view.findViewById(R.id.Contrasenia);
 
-        /*Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        usuariosService = retrofit.create(usuariosService.class);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                Usuario usuario = new Usuario();
-
-                usuario.setEmail(txtUserEmail.getText().toString());
-                usuario.setContrasenia(txtUserContrasenia.getText().toString());
-
-                obtenerUsuario(usuario);
-
-
-            }
-        });*/
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
@@ -182,10 +143,7 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+
     private void Logearse(final Usuario usuario){
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -204,14 +162,14 @@ public class LoginFragment extends Fragment {
 
                     NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
                     View headerView = navigationView.getHeaderView(0);
-                    TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                    email.setText(usuario.email);
-                    LinearLayout imagenUsuario = (LinearLayout) headerView.findViewById(R.id.side_nav);
+                    TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
+                    nombre.setText(usuario.email);
+                    de.hdodenhof.circleimageview.CircleImageView imagenUsuario = (de.hdodenhof.circleimageview.CircleImageView) headerView.findViewById(R.id.profile_image);
                     InputStream srt = null;
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         Usuario post =postSnapshot.getValue(Usuario.class);
                         Usuario btChildDetails = new Usuario(post.getEmail(),post.getContrasenia(),post.getDNI(),post.getImagenUri());
-                        if(btChildDetails.getContrasenia().toString().equals(usuario.contrasenia) ){
+                        if(btChildDetails.getContrasenia().equals(usuario.contrasenia)){
 
                             Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Bienvenido, "+btChildDetails.email, Toast.LENGTH_LONG);
                             toast1.show();
@@ -225,13 +183,12 @@ public class LoginFragment extends Fragment {
                             } catch (IOException e) {
                                 Log.e("aaa", e.getMessage());
                             }
-                            int dimensionInPixel = 200;
 
 
-                            Drawable d = new BitmapDrawable(getResources(), bitmap);
-                            imagenUsuario.setBackground(d);
+                            imagenUsuario.setImageBitmap(bitmap);
                             navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
                             navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
+                            navigationView.getMenu().findItem(R.id.nav_loing).setVisible(false);
                             SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor=preferencias.edit();
                             editor.putString("Email",usuario.email);
@@ -240,7 +197,8 @@ public class LoginFragment extends Fragment {
                             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                             transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
 
-                        }else{
+                        }
+                        else{
                             Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_LONG);
                             toast1.show();
                         }
@@ -249,11 +207,11 @@ public class LoginFragment extends Fragment {
                         //Picasso.with(getActivity().getApplicationContext()).load(btChildDetails.imagenUri).into(imagenUsuario);
                     }
 
-
-
-
                 }
-
+                else{
+                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_LONG);
+                    toast1.show();
+                }
 
 
 
@@ -268,133 +226,10 @@ public class LoginFragment extends Fragment {
 
 
     }
-
-    /*
-    private class TareaComprobarUsuario extends AsyncTask<String,Integer,Boolean> {
-
-
-            private String usuarioEmail;
-            private String usuarioNombre;
-
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean result = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            String email = params[0];
-            String conrasenia = params[1];
-
-            HttpGet del = new HttpGet(URL +email+"/"+conrasenia);
-
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONObject respJSON = new JSONObject(respStr);
-
-                usuarioEmail = respJSON.getString("Email");
-                usuarioNombre = respJSON.getString("Nombre");
-
-
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                result = false;
-            }
-
-            return result;
-        }
-        protected void onPostExecute(Boolean result) {
-
-            if (result) {
-                Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Datos correctos,"+usuarioEmail, Toast.LENGTH_SHORT);
-                toast1.show();
-                NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                View headerView = navigationView.getHeaderView(0);
-                TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText(usuarioEmail);
-                TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-                nombre.setText(usuarioNombre);
-                navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
-                navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
-
-                SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor=preferencias.edit();
-                editor.putString("Email",usuarioEmail);
-                editor.commit();
-                BienvenidoFragment fragment  = new BienvenidoFragment();
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-
-
-            } else {
-
-                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
-                toast1.show();
-
-            }
-        }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
-*/
-   /*
-    public void obtenerUsuario(final Usuario usuario) {
-
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-
-        dialog.setMessage("Ingresando");
-        dialog.show();
-        Call<Usuario> u = usuariosService.obtenerusario(usuario.getEmail(),usuario.getContrasenia());
-        u.enqueue(new Callback<Usuario>() {
-            @Override
-            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
-                if(response.isSuccessful()){
-
-                    String usuarioEmail = usuario.getEmail();
-                    Toast toast1 =Toast.makeText(getActivity().getApplicationContext(),"Datos correctos,"+usuarioEmail, Toast.LENGTH_SHORT);
-                    toast1.show();
-                    NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                    View headerView = navigationView.getHeaderView(0);
-                    TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                    email.setText(usuarioEmail);
-                    TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-                    nombre.setText("");
-                    navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
-                    navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
-
-                    SharedPreferences preferencias=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor=preferencias.edit();
-                    editor.putString("Email",usuarioEmail);
-                    editor.commit();
-                    BienvenidoFragment fragment  = new BienvenidoFragment();
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
-                }
-                if(dialog.isShowing()){
-                    dialog.dismiss();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Usuario> call, Throwable t) {
-                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(),"Datos incorrectos", Toast.LENGTH_SHORT);
-                toast1.show();
-                if (dialog.isShowing()) {
-
-                    dialog.dismiss();
-                }
-            }
-        });
-    }
-*/
-
-   //login firebase
 
 
 

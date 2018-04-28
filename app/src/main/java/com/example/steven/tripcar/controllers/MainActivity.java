@@ -1,15 +1,18 @@
 package com.example.steven.tripcar.controllers;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,31 +20,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.BienvenidoFragment;
 import com.example.steven.tripcar.models.CocheSelectFragment;
 import com.example.steven.tripcar.models.CochesFragment;
 import com.example.steven.tripcar.models.GestionReservasFragment;
 import com.example.steven.tripcar.models.LoginFragment;
-import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.RegistroFragment;
-import com.squareup.picasso.Picasso;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,GestionReservasFragment.OnFragmentInteractionListener,
-        BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener {
-    private String  baseUrl= "http://192.168.1.38/SWTRIPCAR/";
-
+        RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,
+        GestionReservasFragment.OnFragmentInteractionListener,BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,25 +46,27 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        Fragment fragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_main,fragment).commit();
+        if(savedInstanceState == null) {
+            LoginFragment fragment = new LoginFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).addToBackStack(null).commit();
+
+        }
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
+        navigationView.getMenu().findItem(R.id.nav_loing).setVisible(true);
         navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);
         navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
         TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
         TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-        nombre.setText("");
-        email.setText("Inicia sesión");
+        nombre.setText("Inicia sesión");
+        email.setText("");
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -75,24 +74,16 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.END);
+            drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-
-
-
         getMenuInflater().inflate(R.menu.main, menu);
-
-
         return true;
     }
 
@@ -155,16 +146,23 @@ public class MainActivity extends AppCompatActivity
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 View headerView = navigationView.getHeaderView(0);
                 TextView email  = (TextView)headerView.findViewById(R.id.emailLog);
-                email.setText("Inicia sesión");
                 TextView nombre  = (TextView)headerView.findViewById(R.id.nombreLog);
-                nombre.setText("");
+                nombre.setText("Inicia sesión");
+                email.setText("");
                 navigationView.getMenu().findItem(R.id.nav_exit).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(false);
-                Uri path = Uri.parse("android.resource://drawable/" + R.drawable.background);
-                LinearLayout linearLayout = (LinearLayout) headerView.findViewById(R.id.side_nav);
+                navigationView.getMenu().findItem(R.id.nav_loing).setVisible(true);
+                Uri path = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getResources().getResourcePackageName(R.drawable.ic_launcher) + '/' + getResources().getResourceTypeName(R.drawable.ic_launcher) + '/' + String.valueOf(R.drawable.ic_launcher ));
+                de.hdodenhof.circleimageview.CircleImageView perfil = (de.hdodenhof.circleimageview.CircleImageView) headerView.findViewById(R.id.profile_image);
 
-                Drawable yourDrawable = getResources().getDrawable(R.drawable.background);
-                linearLayout.setBackground(yourDrawable);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), path);
+                    perfil.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 Toast toast1 =Toast.makeText(getApplicationContext(),"Sesión cerrada", Toast.LENGTH_LONG);
                 toast1.show();
@@ -190,5 +188,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\AS_Proyectos\tripcarv4\app\app.iml" filepath="C:\AS_Proyectos\tripcarv4\app\app.iml" />
-      <module fileurl="file://C:\AS_Proyectos\tripcarv4\.idea\tripcarv2.iml" filepath="C:\AS_Proyectos\tripcarv4\.idea\tripcarv2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/tripcarv4.iml" filepath="$PROJECT_DIR$/.idea/tripcarv4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tripcarv4.iml" filepath="$PROJECT_DIR$/tripcarv4.iml" />
     </modules>
   </component>
 </project>
