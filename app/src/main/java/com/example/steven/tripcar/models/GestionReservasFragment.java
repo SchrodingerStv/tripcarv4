@@ -131,7 +131,7 @@ public class GestionReservasFragment extends Fragment {
                             for (DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                                 final Coche coche = postSnapshot.getValue(Coche.class);
                                 usuarioCocheReserva btChildDetails = new usuarioCocheReserva(post.getfInicio(),post.getfFinal(),post.getUsuario(),post.getCoche(),post.getPrecioTotal(),coche.getMarcaModelo(),
-                                        coche.getTamanio(),coche.getPrecioHora(),coche.getUriImagen(),coche.getMatricula(),post.getIdReserva());
+                                        coche.getTamanio(),coche.getPrecioHora(),coche.getUriImagen(),coche.getMatricula(),post.getIdReserva(),post.getfFinalizacion());
                                 listaReservas.add(btChildDetails);
 
                                 myAdapterReservas= new MyAdapterReservas(getActivity(),listaReservas);

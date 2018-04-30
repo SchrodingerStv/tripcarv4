@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
 
@@ -70,6 +76,10 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
             viewHolder.mCancelar = (Button) convertView.findViewById(R.id.cancelar);
             viewHolder.mFechaFinal = (TextView) convertView.findViewById(R.id.fechaHoraFinal);
             viewHolder.mFechaInicio = (TextView) convertView.findViewById(R.id.fecaHoraInicial);
+            viewHolder.mFechaFinalizacion = (TextView)convertView.findViewById(R.id.fechaHoraFinalizacion);
+            viewHolder.mFinalizar = (Button) convertView.findViewById(R.id.finalizar);
+
+
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
@@ -85,6 +95,74 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
         viewHolder.mImagen.setImageBitmap(bit);
         viewHolder.mFechaInicio.setText(usaRC.getfInicio());
         viewHolder.mFechaFinal.setText(usaRC.getfFinal());
+        viewHolder.mFechaFinalizacion.setText(usaRC.getfFinalizacion());
+        viewHolder.mFinalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final FragmentActivity fa = (FragmentActivity)(getContext());
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+                ref.orderByChild("idReserva").equalTo(usaRC.getIdReserva()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                         boolean finalizo = false;
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+
+                            String fecha =  usaRC.getfInicio();
+                            String ff = usaRC.getfFinal();
+                            String fff= usaRC.getfFinalizacion();
+                            String pattern = "dd/MM/yyyy HH:mm";
+                            SimpleDateFormat format = new SimpleDateFormat(pattern);
+                            DateFormat writeFormat = new SimpleDateFormat( pattern);
+                            try {
+
+                                String fechaActual = format.format(new Date());
+                                Date ff2 = format.parse(ff);
+                                Date fechaEliminar = format.parse(fecha);
+                                Date actual = format.parse(fechaActual);
+                                String fomafi = writeFormat.format(actual);
+                                int x2 = (int) ((actual.getTime()-fechaEliminar.getTime())/1000)/3600;
+
+                                Log.e("dato2: ", String.valueOf(x2));
+
+                                if(actual.after(fechaEliminar) && x2>1 && fechaEliminar.before(ff2) && fff.equals("")){
+                                    Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva finalizada", Toast.LENGTH_LONG);
+                                    toast2.show();
+                                   ref.child(child.getKey()).child("fFinalizacion").setValue(fomafi);
+                                   finalizo=true;
+                                }
+                                else if(fechaEliminar.getTime()<=actual.getTime() || x2<1 || !fff.equals("")){
+                                    Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes finalizar esta reserva", Toast.LENGTH_LONG);
+                                    toast2.show();
+
+
+                                }
+
+
+                                Log.e("fechaI actual: ",actual.toString());
+                                Log.e("fechaI select: ",fechaEliminar.toString());
+
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                        if (finalizo==true){
+                            GestionReservasFragment f = new GestionReservasFragment();
+                            FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
+                            ft.replace(R.id.content_main,f).addToBackStack(null).commit();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
         viewHolder.mCancelar.setOnClickListener(new View.OnClickListener() {
 
 
@@ -94,26 +172,58 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
 
                 SharedPreferences prefe=fa.getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
                 String d=prefe.getString("Email", "");
-                if (d.length()==0) {
-                    LoginFragment f = new LoginFragment();
-                    FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_main,f).commit();
-                }
-                else {
+
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
                     ref.orderByChild("idReserva").equalTo(usaRC.getIdReserva()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            boolean cancelo = false;
                             for (DataSnapshot child: dataSnapshot.getChildren()) {
-                                ref.child(child.getKey()).removeValue();
-                                Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
-                                toast2.show();
+
+                                String fecha =  usaRC.getfInicio();
+                                String fff = usaRC.getfFinalizacion();
+                                String pattern = "dd/MM/yyyy HH:mm";
+                                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                                try {
+
+                                    String fechaActual = format.format(new Date());
+                                    Date fechaEliminar = format.parse(fecha);
+                                    Date actual = format.parse(fechaActual);
+                                    int x2 = (int) ((actual.getTime()-fechaEliminar.getTime())/1000)/3600;
+                                    if(actual.before(fechaEliminar) && fff.equals("")){
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
+                                        toast2.show();
+                                        cancelo=true;
+                                        ref.child(child.getKey()).removeValue();
+                                    }
+                                    else if(fechaEliminar.equals(actual)&& x2<1 && fff.equals("")){
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
+                                        toast2.show();
+                                        cancelo=true;
+                                        ref.child(child.getKey()).removeValue();
+                                    }
+                                    else if(actual.after(fechaEliminar) || !fff.equals("")){
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes cancelar esta reserva", Toast.LENGTH_LONG);
+                                        toast2.show();
+                                    }
+
+                                    Log.e("fechaI actual: ",actual.toString());
+                                    Log.e("fechaI select: ",fechaEliminar.toString());
+
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
                             }
-                            GestionReservasFragment f = new GestionReservasFragment();
-                            FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                            ft.replace(R.id.content_main,f).commit();
+                            if(cancelo==true){
+                                GestionReservasFragment f = new GestionReservasFragment();
+                                FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
+                                ft.replace(R.id.content_main,f).addToBackStack(null).commit();
+                            }
                         }
+
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
@@ -122,8 +232,6 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
                     });
 
 
-
-                }
 
             }
         });
@@ -141,6 +249,8 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
         TextView mPrecio;
         TextView mFechaInicio;
         TextView mFechaFinal;
+        TextView mFechaFinalizacion;
+        Button mFinalizar;
         Button mCancelar;
 
     }

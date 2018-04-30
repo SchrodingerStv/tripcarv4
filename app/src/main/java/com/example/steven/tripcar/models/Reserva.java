@@ -13,6 +13,7 @@ public class Reserva {
     private String coche;
     private String precioTotal;
     private String idReserva;
+    private String fFinalizacion;
 
 
 
@@ -20,7 +21,7 @@ public class Reserva {
 
     }
 
-    public Reserva( String fInicio, String fFinal, String usuario, String coche, String precioTotal, String idReserva) {
+    public Reserva( String fInicio, String fFinal, String usuario, String coche, String precioTotal, String idReserva,String fFinalizacion) {
 
         this.fInicio = fInicio;
         this.fFinal = fFinal;
@@ -28,6 +29,16 @@ public class Reserva {
         this.coche = coche;
         this.precioTotal = precioTotal;
         this.idReserva = idReserva;
+        this.fFinalizacion = fFinalizacion;
+
+    }
+
+    public String getfFinalizacion() {
+        return fFinalizacion;
+    }
+
+    public void setfFinalizacion(String fFinalizacion) {
+        this.fFinalizacion = fFinalizacion;
     }
 
     public String getIdReserva() {

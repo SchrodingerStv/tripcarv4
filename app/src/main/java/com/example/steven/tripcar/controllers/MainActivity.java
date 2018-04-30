@@ -1,13 +1,10 @@
 package com.example.steven.tripcar.controllers;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +25,7 @@ import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.BienvenidoFragment;
 import com.example.steven.tripcar.models.BuscadorFragment;
 import com.example.steven.tripcar.models.CocheSelectFragment;
+import com.example.steven.tripcar.models.CochesBuscadorFragment;
 import com.example.steven.tripcar.models.CochesFragment;
 import com.example.steven.tripcar.models.GestionReservasFragment;
 import com.example.steven.tripcar.models.LoginFragment;
@@ -40,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,
         GestionReservasFragment.OnFragmentInteractionListener,BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener,
-        BuscadorFragment.OnFragmentInteractionListener{
+        BuscadorFragment.OnFragmentInteractionListener,CochesBuscadorFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +52,8 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         if(savedInstanceState == null) {
-            BuscadorFragment fragment = new BuscadorFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).addToBackStack(null).commit();
+            CochesFragment fragment = new CochesFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).commit();
 
         }
 

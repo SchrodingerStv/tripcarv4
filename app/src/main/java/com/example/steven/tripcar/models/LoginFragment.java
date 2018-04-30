@@ -1,5 +1,6 @@
 package com.example.steven.tripcar.models;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -90,6 +91,8 @@ public class LoginFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -146,8 +149,7 @@ public class LoginFragment extends Fragment {
 
     private void Logearse(final Usuario usuario){
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         final DatabaseReference ref = database.getReference(FirebaseReferences.USUARIOS_REFERENCE);
@@ -170,6 +172,7 @@ public class LoginFragment extends Fragment {
                         Usuario post =postSnapshot.getValue(Usuario.class);
                         Usuario btChildDetails = new Usuario(post.getEmail(),post.getContrasenia(),post.getDNI(),post.getImagenUri());
                         if(btChildDetails.getContrasenia().equals(usuario.contrasenia)){
+
 
                             Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Bienvenido, "+btChildDetails.email, Toast.LENGTH_LONG);
                             toast1.show();
@@ -198,6 +201,7 @@ public class LoginFragment extends Fragment {
                             SharedPreferences.Editor editor=preferencias.edit();
                             editor.putString("Email",usuario.email);
                             editor.commit();
+
                             BienvenidoFragment fragment  = new BienvenidoFragment();
                             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                             transaction.replace(R.id.content_main,fragment).addToBackStack(null).commit();
@@ -206,6 +210,8 @@ public class LoginFragment extends Fragment {
                         else{
                             Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_LONG);
                             toast1.show();
+
+
                         }
 
 
@@ -216,6 +222,7 @@ public class LoginFragment extends Fragment {
                 else{
                     Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "El usuario no existe o los datos son incorrectos", Toast.LENGTH_LONG);
                     toast1.show();
+
                 }
 
 
