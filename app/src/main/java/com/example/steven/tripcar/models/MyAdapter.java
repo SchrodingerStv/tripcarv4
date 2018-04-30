@@ -90,12 +90,7 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
 
                 SharedPreferences prefe=fa.getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
                 String d=prefe.getString("Email", "");
-                if (d.length()==0) {
-                    LoginFragment f = new LoginFragment();
-                    FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_main,f).commit();
-                }
-                else {
+
 
                     CocheSelectFragment coche =  new CocheSelectFragment();
                     FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
@@ -108,7 +103,7 @@ public class MyAdapter extends ArrayAdapter<Coche>  {
                     editor.commit();
                     ft.replace(R.id.content_main,coche).addToBackStack(null).commit();
 
-                }
+
 
             }
         });

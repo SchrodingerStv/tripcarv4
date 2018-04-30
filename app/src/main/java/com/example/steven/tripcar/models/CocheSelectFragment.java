@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
-import com.example.steven.tripcar.services.cochesService;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,9 +33,13 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -51,12 +56,13 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private  cochesService cochesService;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private EditText fInicial,hinicial,fFinal,hFinal;
     private Button reservar;
+    private double coste;
 
     private int dia,mes,ano,hora,minutos;
 
@@ -90,6 +96,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -98,6 +105,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_coche_select, container, false);
+
 
 
         SharedPreferences prefe=getActivity().getSharedPreferences("Coche", Context.MODE_PRIVATE);
@@ -118,6 +126,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
         final TextView txtPrecio = (TextView) view.findViewById(R.id.precioSelect);
         final TextView txtMarca = (TextView) view.findViewById(R.id.marcaModeloSelect);
         final ImageView img = (ImageView) view.findViewById(R.id.imagenCoche) ;
+        coste = Double.parseDouble(obj.getPrecioHora());
 
         ref.orderByChild("Matricula").equalTo(obj.getMatricula()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -178,16 +187,95 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     FirebaseStorage storage = FirebaseStorage.getInstance();
-
+                     SharedPreferences prefe=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+                     String d=prefe.getString("Email", "");
                     final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+
                     ref.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            Reserva reserva = new Reserva(fInicial.getText() + " " + hinicial.getText(), fFinal.getText() + " " + hFinal.getText(), u, obj.getMatricula(), "100", UUID.randomUUID().toString() );
-                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada", Toast.LENGTH_LONG);
-                            toast2.show();
-                            ref.push().setValue(reserva);
+                            boolean existe = dataSnapshot.exists();
+                            if(existe){
+
+                                SharedPreferences prefe=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+                                String d=prefe.getString("Email", "");
+                                if(d.length()==0){
+                                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "Debes iniciar sesión para realizar cualquier reserva", Toast.LENGTH_LONG);
+                                    toast1.show();
+                                }
+
+                                else{
+
+                                    for(DataSnapshot data : dataSnapshot.getChildren()){
+
+                                        Reserva reserva = data.getValue(Reserva.class);
+                                        String fecha1 = fInicial.getText() + " " + hinicial.getText();
+                                        String fecha2 = fFinal.getText() + " " + hFinal.getText();
+                                        String fechaI = reserva.getfInicio();
+                                        String fechaF = reserva.getfFinal();
+                                        String pattern = "dd/MM/yyyy hh:mm";
+                                        SimpleDateFormat format = new SimpleDateFormat(pattern);
+                                        try {
+                                            Date dateI = format.parse(fecha1);
+                                            Date dateF = format.parse(fecha2);
+                                            Date dateIH = format.parse(fechaI);
+                                            Date dateFH = format.parse(fechaF);
+
+
+                                            if(dateIH.equals(dateF)||dateFH.equals(dateI)||dateI.equals(dateIH) || dateF.equals(dateFH)){
+                                                Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "No puedes reserver con esas fechas", Toast.LENGTH_LONG);
+                                                toast1.show();
+                                           ;
+                                            }
+                                            else if(dateIH!=(dateF)&&dateFH!=(dateI)&& dateI!=(dateIH) && dateF!=(dateFH)){
+                     
+                                                double x = (double) ((dateF.getTime()-dateI.getTime())/1000)/3600;
+                                                double total = x*coste;
+                                                Log.i("Horas ", String.valueOf(total));
+                                                Reserva reservadata = new Reserva(fInicial.getText() + " " + hinicial.getText(), fFinal.getText() + " " + hFinal.getText(), u, obj.getMatricula(), String.valueOf(total), UUID.randomUUID().toString() );
+                                                Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada", Toast.LENGTH_LONG);
+                                                toast2.show();
+                                                ref.push().setValue(reservadata);
+                                            }
+
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+
+
+                                    }
+                                }
+
+
+                            }
+                            else{
+                                String fecha1 = fInicial.getText() + " " + hinicial.getText();
+                                String fecha2 = fFinal.getText() + " " + hFinal.getText();
+
+                                String pattern = "dd/MM/yyyy hh:mm";
+                                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                                try {
+                                    Date dateI = format.parse(fecha1);
+                                    Date dateF = format.parse(fecha2);
+
+                                    double x = (double) ((dateF.getTime()-dateI.getTime())/1000)/3600;
+                                    double total = x*coste;
+                                    Log.i("Horas ", String.valueOf(total));
+                                    Reserva reservadata = new Reserva(fInicial.getText() + " " + hinicial.getText(), fFinal.getText() + " " + hFinal.getText(), u, obj.getMatricula(), String.valueOf(total), UUID.randomUUID().toString() );
+                                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Rserva realizada", Toast.LENGTH_LONG);
+                                    toast2.show();
+                                    ref.push().setValue(reservadata);
+
+
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
 
 
                         }
@@ -201,9 +289,6 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
             }
         });
-
-
-
 
 
 
@@ -247,17 +332,47 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
             DatePickerDialog datePicker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-                    if(year< yy || dayOfMonth<dd || monthOfYear<mm){
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                        toast2.show();
+                    String fecha = "";
+                    if(dayOfMonth<10 || monthOfYear<10){
+                         fecha = "0"+String.valueOf(dayOfMonth) +"/0"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
                     }
-                   else{
-
-                        String fecha = String.valueOf(year) +"-"+String.valueOf(monthOfYear+1)
-                                +"-"+String.valueOf(dayOfMonth);
-                        fInicial.setText(fecha);
+                    else{
+                        fecha = String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
                     }
+
+                    String pattern = "dd/MM/yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    try {
+
+                        String fechaActual = format.format(new Date());
+                        Date fechaSelect = format.parse(fecha);
+                        Date actual = format.parse(fechaActual);
+
+                        if(fechaSelect.equals(actual)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.before(actual)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.after(actual)){
+                            fInicial.setText(fecha);
+                            fFinal.setText("");
+                            hFinal.setText("");
+                        }
+
+                        Log.e("fechaI actual: ",actual.toString());
+                        Log.e("fechaI select: ",fechaSelect.toString());
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+
 
                 }
             }, yy, mm, dd);
@@ -271,8 +386,42 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    String hora = hourOfDay + ":" + minute;
-                    hinicial.setText(hora);
+                    String hora = "";
+                    if(minute<10){
+                        hora = hourOfDay + ":0" + minute;
+                    }else{
+                        hora = hourOfDay + ":" + minute;
+                    }
+
+                    String pattern = "dd/MM/yyyy hh:mm";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    try {
+
+                        String fechaActual = format.format(new Date());
+                        Date actual = format.parse(fechaActual);
+
+                        if(hourOfDay==(actual.getHours())){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(hourOfDay<actual.getHours()){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(hourOfDay>(actual.getHours())){
+                            hinicial.setText(hora);
+                            fFinal.setText("");
+                            hFinal.setText("");
+                        }
+
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+
+
                 }
             },hora,minutos,true);
             timePickerDialog.show();
@@ -283,29 +432,55 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
         if(v==fFinal){
 
 
-
-
             DatePickerDialog datePicker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                    if(year< yy || dayOfMonth<dd || monthOfYear<mm ){
-
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                        toast2.show();
+                    String fecha = "";
+                    if(dayOfMonth<10 || monthOfYear<10){
+                        fecha = "0"+String.valueOf(dayOfMonth) +"/0"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
                     }
                     else{
-
-                        String fecha = String.valueOf(year) +"-"+String.valueOf(monthOfYear+1)
-                                +"-"+String.valueOf(dayOfMonth);
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "fechas"+fecha+"   "+fInicial.getText() , Toast.LENGTH_SHORT);
-                        toast2.show();
-                        if(fecha.equals(fInicial.getText().toString())){
-                            fFinal.setText(fecha);
-                        }
-
+                        fecha = String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
                     }
 
+                    String fechaInicial = "";
+                    String pattern = "dd/MM/yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    if(!fInicial.getText().toString().equals("")){
+                         fechaInicial = fInicial.getText().toString();
+                    }
+
+
+                    try {
+
+
+                        Date fechaSelect = format.parse(fecha);
+
+                        Date fechaInit = format.parse(fechaInicial);
+
+                        if(fechaSelect.equals(fechaInit)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.before(fechaInit)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.after(fechaInit)){
+                            fFinal.setText(fecha);
+
+                        }
+
+                        Log.e("fechaF actual: ",fechaInit.toString());
+                        Log.e("fechaF select: ",fechaSelect.toString());
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }, yy, mm, dd);
 
@@ -319,9 +494,14 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    String hora = hourOfDay + ":" + minute;
+                    String hora = "";
+                    if(minute<10){
+                        hora = hourOfDay + ":0" + minute;
+                    }else{
+                        hora = hourOfDay + ":" + minute;
+                    }
 
-                        hFinal.setText(hora);
+                    hFinal.setText(hora);
 
 
                 }

@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_nav_gestion"
             android:title="Reservas" />
         <item
+            android:id="@+id/nav_buscar"
+            android:icon="@drawable/ic_nav_search"
+            android:title="Salir" />
+        <item
             android:id="@+id/nav_exit"
             android:icon="@drawable/ic_nav_exit"
             android:title="Salir" />

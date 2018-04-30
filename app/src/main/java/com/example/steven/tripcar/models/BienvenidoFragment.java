@@ -35,8 +35,7 @@ public class BienvenidoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String URL = "http://192.168.1.38/ServicioRestTripCar/Api/Coches";
-    private String URL2 = "http://10.111.60.105/ServicioRestTripCar/Api/Coches";
+
     private OnFragmentInteractionListener mListener;
     private ListView mListView;
     InputStream srt = null;

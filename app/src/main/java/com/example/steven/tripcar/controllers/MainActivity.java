@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.models.BienvenidoFragment;
+import com.example.steven.tripcar.models.BuscadorFragment;
 import com.example.steven.tripcar.models.CocheSelectFragment;
 import com.example.steven.tripcar.models.CochesFragment;
 import com.example.steven.tripcar.models.GestionReservasFragment;
@@ -38,7 +39,8 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RegistroFragment.OnFragmentInteractionListener,LoginFragment.OnFragmentInteractionListener,CochesFragment.OnFragmentInteractionListener,
-        GestionReservasFragment.OnFragmentInteractionListener,BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener {
+        GestionReservasFragment.OnFragmentInteractionListener,BienvenidoFragment.OnFragmentInteractionListener,CocheSelectFragment.OnFragmentInteractionListener,
+        BuscadorFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         if(savedInstanceState == null) {
-            LoginFragment fragment = new LoginFragment();
+            BuscadorFragment fragment = new BuscadorFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).addToBackStack(null).commit();
 
         }
@@ -68,6 +70,16 @@ public class MainActivity extends AppCompatActivity
         nombre.setText("Inicia sesión");
         email.setText("");
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        SharedPreferences prefe=getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
+        String d=prefe.getString("Email", "");
+        if (d.length()!=0) {
+            SharedPreferences.Editor editor=prefe.edit();
+            editor.clear();
+            editor.commit();
+        }
+
     }
 
     @Override
@@ -130,7 +142,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gestion) {
             currentFragment = new GestionReservasFragment();
             fragmentSeleccionado = true;
-        } else if (id == R.id.nav_exit) {
+        } else if(id==R.id.nav_buscar){
+            currentFragment = new BuscadorFragment();
+            fragmentSeleccionado = true;
+        }else if (id == R.id.nav_exit) {
 
             SharedPreferences prefe=getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
             String d=prefe.getString("Email", "");

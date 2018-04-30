@@ -46,6 +46,7 @@ public class RegistroFragment extends Fragment {
     private EditText txtNombre;
     private EditText txtDNI;
     private EditText txtContrasenia;
+    private Button mQuitarImagen;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -101,6 +102,16 @@ public class RegistroFragment extends Fragment {
         Button btnRegister = (Button) view.findViewById(R.id.registrarse);
         Button btnLogin = (Button)view.findViewById(R.id.logearse);
         txtEmail = (EditText) view.findViewById(R.id.email);
+        mQuitarImagen = (Button) view.findViewById(R.id.quitarImagen);
+        mQuitarImagen.setVisibility(View.INVISIBLE);
+        mQuitarImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mImageUri=null;
+                mImageView.setImageBitmap(null);
+                mQuitarImagen.setVisibility(View.INVISIBLE);
+            }
+        });
 
         txtDNI = (EditText) view.findViewById(R.id.dni);
         txtContrasenia = (EditText) view.findViewById(R.id.contrasenia);
@@ -182,6 +193,7 @@ public class RegistroFragment extends Fragment {
                     try {
                         bitmapImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mImageUri);
                         mImageView.setImageBitmap(bitmapImage);
+                        mQuitarImagen.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

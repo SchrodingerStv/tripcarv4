@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".models.BuscadorFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginLeft="40dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:paddingTop="20dp"
+        android:src="@mipmap/tripcarlogo" />
+
+    <TextView
+        android:id="@+id/labelBFI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fecha inicial"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <EditText
+        android:id="@+id/fechaBInicial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+    <EditText
+        android:id="@+id/horaBInicial"
+        android:layout_width="147dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="-45dp"
+        android:clickable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+    <TextView
+        android:id="@+id/labelBFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:text="Fecha final"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <EditText
+        android:id="@+id/fechaBFin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/horaBFin"
+        android:layout_width="147dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="-45dp"
+        android:clickable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/Buscar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:text="Buscar"
+        android:textColor="@android:color/background_light" />
+
+</LinearLayout>

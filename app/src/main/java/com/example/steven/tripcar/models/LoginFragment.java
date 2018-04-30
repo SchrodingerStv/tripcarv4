@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 import com.example.steven.tripcar.controllers.MainActivity;
-import com.example.steven.tripcar.services.usuariosService;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -179,13 +179,18 @@ public class LoginFragment extends Fragment {
                             try {
 
                                 srt = new java.net.URL(btChildDetails.imagenUri).openStream();
-                                bitmap = BitmapFactory.decodeStream(srt);
+
+                                    bitmap = BitmapFactory.decodeStream(srt);
+
+
                             } catch (IOException e) {
                                 Log.e("aaa", e.getMessage());
                             }
 
+                            if(bitmap!=null){
+                                imagenUsuario.setImageBitmap(bitmap);
+                            }
 
-                            imagenUsuario.setImageBitmap(bitmap);
                             navigationView.getMenu().findItem(R.id.nav_exit).setVisible(true);
                             navigationView.getMenu().findItem(R.id.nav_gestion).setVisible(true);
                             navigationView.getMenu().findItem(R.id.nav_loing).setVisible(false);

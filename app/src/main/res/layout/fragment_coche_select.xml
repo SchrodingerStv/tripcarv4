@@ -1,126 +1,155 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cocheselected"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:context="com.example.steven.tripcar.models.CocheSelectFragment">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ImageView
-        android:id="@+id/imagenCoche"
-        android:layout_marginLeft="70dp"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        />
-    <TextView
-        android:id="@+id/labelMarcaSelect"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Marca:"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        android:orientation="vertical"
+        android:padding="5dp"
+        tools:context="com.example.steven.tripcar.models.CocheSelectFragment">
 
-    <TextView
-        android:id="@+id/marcaModeloSelect"
-        android:layout_width="219dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="-27dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    <TextView
-        android:id="@+id/labelTamanioSelect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Tamaño:"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <!-- TODO: Update blank fragment layout -->
+        <ImageView
+            android:id="@+id/imagenCoche"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginLeft="70dp" />
 
-    <TextView
-        android:id="@+id/tamanioSelect"
-        android:layout_width="219dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="80dp"
-        android:layout_marginTop="-28dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    <TextView
-        android:id="@+id/labelPrecioSelect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Precio:"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <TextView
+            android:id="@+id/labelMarcaSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Marca:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <TextView
-        android:id="@+id/precioSelect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="65dp"
-        android:layout_marginTop="-27dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    <TextView
-        android:id="@+id/labelMatriculaSelect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Matricula:"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <TextView
+            android:id="@+id/marcaModeloSelect"
+            android:layout_width="219dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="-27dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <TextView
-        android:id="@+id/matriculaSelect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="93dp"
-        android:layout_marginTop="-27dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <TextView
+            android:id="@+id/labelTamanioSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tamaño:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <EditText
-        android:id="@+id/fechaInicial"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+        <TextView
+            android:id="@+id/tamanioSelect"
+            android:layout_width="219dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="-28dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <EditText
-        android:id="@+id/fechaFin"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="265dp"
-        android:layout_marginTop="-45dp"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/labelPrecioSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Precio:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <EditText
-        android:id="@+id/horaInicial"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+        <TextView
+            android:id="@+id/precioSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="65dp"
+            android:layout_marginTop="-27dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <EditText
-        android:id="@+id/horaFin"
-        android:layout_width="102dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="265dp"
-        android:layout_marginTop="-44dp"
-        android:clickable="true"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/labelMatriculaSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Matricula:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <Button
-        android:id="@+id/Reservar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reservar"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:textColor="@android:color/background_light"/>
+        <TextView
+            android:id="@+id/matriculaSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="93dp"
+            android:layout_marginTop="-27dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:id="@+id/labelFI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fecha inicial"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <EditText
+            android:id="@+id/fechaInicial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ems="10"
+            android:focusable="false"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+        <EditText
+            android:id="@+id/horaInicial"
+            android:layout_width="147dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="250dp"
+            android:layout_marginTop="-45dp"
+            android:clickable="true"
+            android:ems="10"
+            android:focusable="false"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+        <TextView
+            android:id="@+id/labelFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="Fecha final"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <EditText
+            android:id="@+id/fechaFin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/horaFin"
+            android:layout_width="147dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="250dp"
+            android:layout_marginTop="-45dp"
+            android:clickable="true"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/Reservar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="Reservar"
+            android:textColor="@android:color/background_light" />
 
 
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
+
