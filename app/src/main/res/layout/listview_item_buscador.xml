@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="false"
@@ -10,7 +10,7 @@
 
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewFiltro"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginLeft="70dp"
@@ -24,7 +24,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/marcaModelo"
+        android:id="@+id/marcaModeloFiltro"
         android:layout_width="219dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="70dp"
@@ -41,7 +41,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/tamanio"
+        android:id="@+id/tamanioFiltro"
         android:layout_width="219dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="80dp"
@@ -58,7 +58,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/precio"
+        android:id="@+id/precioFiltro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="65dp"
@@ -75,7 +75,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <TextView
-        android:id="@+id/matricula"
+        android:id="@+id/matriculaFiltro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="93dp"
@@ -85,7 +85,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <Button
-        android:id="@+id/seleccionarCoche"
+        android:id="@+id/seleccionarCocheFiltro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorPrimaryDark"

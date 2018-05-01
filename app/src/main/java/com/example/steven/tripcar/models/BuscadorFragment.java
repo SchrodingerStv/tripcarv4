@@ -89,10 +89,10 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
                 bundle.putString("fechaInicial", fBInicial.getText().toString()+" "+hBinicial.getText().toString());
                 bundle.putString("fechaFinal", fBFinal.getText().toString()+" "+hBFinal.getText().toString());
 
-                Fragment myObj = new CochesFragment();
+                Fragment myObj = new CochesBuscadorFragment();
                 myObj.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_main,myObj).commit();
-               // myObj.setArguments(bundle);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_main,myObj).addToBackStack(null).commit();
+
             }
         });
 

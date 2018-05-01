@@ -1,14 +1,36 @@
 package com.example.steven.tripcar.models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.gson.Gson;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,13 +43,15 @@ import com.example.steven.tripcar.R;
 public class CochesBuscadorFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "fechaInicial";
+    private static final String ARG_PARAM2 = "fechaFinal";
+    private List<Coche> listaCochesFiltro = new ArrayList<>();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private ListView mListView;
+    private MyAdapter myAdapter;
     private OnFragmentInteractionListener mListener;
 
     public CochesBuscadorFragment() {
@@ -65,7 +89,111 @@ public class CochesBuscadorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_coches_buscador, container, false);
+        View view= inflater.inflate(R.layout.fragment_coches_buscador, container, false);
+
+        mListView = (ListView) view.findViewById(R.id.listviewFiltro);
+        obtenerCoches();
+
+
+
+        return view;
+
+
+
+    }
+
+    private void obtenerCoches() {
+
+        final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        formatSymbols.setDecimalSeparator(',');
+        final DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+
+
+        ref.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final DatabaseReference refcoche = database.getReference(FirebaseReferences.COCHES_REFERENCE);
+
+                String pattern = "dd/MM/yyyy HH:mm";
+                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                DateFormat writeFormat = new SimpleDateFormat( pattern);
+
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    final Reserva post = postSnapshot.getValue(Reserva.class);
+
+                    try {
+                        Date fechaParamI = format.parse(mParam1);
+                        Date fechaparamF = format.parse(mParam2);
+                        Date fechagetI = format.parse(post.getfInicio());
+                        final Date fechagetF = format.parse(post.getfFinal());
+
+                        if(!post.getfFinalizacion().equals("")){
+
+                                refcoche.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                            final Coche coche = postSnapshot2.getValue(Coche.class);
+
+                                            if (post.getCoche().equals(coche.getMatricula()) ) {
+
+                                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                                listaCochesFiltro.add(btChildDetails);
+                                                myAdapter = new MyAdapter(getActivity(), listaCochesFiltro);
+                                                mListView.setAdapter(myAdapter);
+                                                myAdapter.notifyDataSetChanged();
+
+
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+
+
+
+
+
+
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
