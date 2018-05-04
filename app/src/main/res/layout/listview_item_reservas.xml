@@ -118,29 +118,7 @@
         android:paddingLeft="3dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    <TextView
-        android:id="@+id/labelFFR"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Fecha finalizacion:"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <TextView
-        android:id="@+id/fechaHoraFinalizacion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="110dp"
-        android:layout_marginTop="-27dp"
-        android:paddingLeft="57dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-    <Button
-        android:id="@+id/finalizar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Finalizar reserva"
-        android:text="Finalizar reserva"
-        android:textColor="@android:color/background_light" />
 
     <Button
         android:id="@+id/cancelar"

@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -136,6 +138,7 @@ public class RegistroFragment extends Fragment {
 
 
         });
+
         //firebase
         btnRegister.setOnClickListener(new View.OnClickListener() {
 
@@ -146,11 +149,20 @@ public class RegistroFragment extends Fragment {
                 }
                 else{
                     Usuario usuario = new Usuario();
-                    usuario.setDNI(Integer.parseInt(txtDNI.getText().toString()));
-                    usuario.setEmail( txtEmail.getText().toString() );
-                    usuario.setContrasenia(txtContrasenia.getText().toString());
+                    if(!validarEmail(txtEmail.getText().toString())){
+                        txtEmail.setError("Email no válido");
+                    }
 
-                    registrar(usuario);
+                    else{
+
+                        usuario.setDNI(Integer.parseInt(txtDNI.getText().toString()));
+                        usuario.setEmail( txtEmail.getText().toString() );
+                        usuario.setContrasenia(txtContrasenia.getText().toString());
+                        registrar(usuario);
+                    }
+
+
+
                 }
 
 
@@ -182,7 +194,10 @@ public class RegistroFragment extends Fragment {
         }
     }
 
-
+    private boolean validarEmail(String email) {
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        return pattern.matcher(email).matches();
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

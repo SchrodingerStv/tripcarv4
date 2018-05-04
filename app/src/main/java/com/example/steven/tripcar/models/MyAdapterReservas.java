@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,8 +77,6 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
             viewHolder.mCancelar = (Button) convertView.findViewById(R.id.cancelar);
             viewHolder.mFechaFinal = (TextView) convertView.findViewById(R.id.fechaHoraFinal);
             viewHolder.mFechaInicio = (TextView) convertView.findViewById(R.id.fecaHoraInicial);
-            viewHolder.mFechaFinalizacion = (TextView)convertView.findViewById(R.id.fechaHoraFinalizacion);
-            viewHolder.mFinalizar = (Button) convertView.findViewById(R.id.finalizar);
 
 
             // Cache the viewHolder object inside the fresh view
@@ -95,74 +94,7 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
         viewHolder.mImagen.setImageBitmap(bit);
         viewHolder.mFechaInicio.setText(usaRC.getfInicio());
         viewHolder.mFechaFinal.setText(usaRC.getfFinal());
-        viewHolder.mFechaFinalizacion.setText(usaRC.getfFinalizacion());
-        viewHolder.mFinalizar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final FragmentActivity fa = (FragmentActivity)(getContext());
-                final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
-                ref.orderByChild("idReserva").equalTo(usaRC.getIdReserva()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                         boolean finalizo = false;
-                        for (DataSnapshot child: dataSnapshot.getChildren()) {
 
-                            String fecha =  usaRC.getfInicio();
-                            String ff = usaRC.getfFinal();
-                            String fff= usaRC.getfFinalizacion();
-                            String pattern = "dd/MM/yyyy HH:mm";
-                            SimpleDateFormat format = new SimpleDateFormat(pattern);
-                            DateFormat writeFormat = new SimpleDateFormat( pattern);
-                            try {
-
-                                String fechaActual = format.format(new Date());
-                                Date ff2 = format.parse(ff);
-                                Date fechaEliminar = format.parse(fecha);
-                                Date actual = format.parse(fechaActual);
-                                String fomafi = writeFormat.format(actual);
-                                int x2 = (int) ((actual.getTime()-fechaEliminar.getTime())/1000)/3600;
-
-                                Log.e("dato2: ", String.valueOf(x2));
-
-                                if(actual.after(fechaEliminar) && x2>1 && fechaEliminar.before(ff2) && fff.equals("")){
-                                    Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva finalizada", Toast.LENGTH_LONG);
-                                    toast2.show();
-                                   ref.child(child.getKey()).child("fFinalizacion").setValue(fomafi);
-                                   finalizo=true;
-                                }
-                                else if(fechaEliminar.getTime()<=actual.getTime() || x2<1 || !fff.equals("")){
-                                    Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes finalizar esta reserva", Toast.LENGTH_LONG);
-                                    toast2.show();
-
-
-                                }
-
-
-                                Log.e("fechaI actual: ",actual.toString());
-                                Log.e("fechaI select: ",fechaEliminar.toString());
-
-
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                        if (finalizo==true){
-                            GestionReservasFragment f = new GestionReservasFragment();
-                            FragmentTransaction ft = fa.getSupportFragmentManager().beginTransaction();
-                            ft.replace(R.id.content_main,f).addToBackStack(null).commit();
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
         viewHolder.mCancelar.setOnClickListener(new View.OnClickListener() {
 
 
@@ -175,6 +107,8 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
 
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
                     final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
+
+
                     ref.orderByChild("idReserva").equalTo(usaRC.getIdReserva()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -182,7 +116,7 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
                             for (DataSnapshot child: dataSnapshot.getChildren()) {
 
                                 String fecha =  usaRC.getfInicio();
-                                String fff = usaRC.getfFinalizacion();
+
                                 String pattern = "dd/MM/yyyy HH:mm";
                                 SimpleDateFormat format = new SimpleDateFormat(pattern);
                                 try {
@@ -191,19 +125,19 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
                                     Date fechaEliminar = format.parse(fecha);
                                     Date actual = format.parse(fechaActual);
                                     int x2 = (int) ((actual.getTime()-fechaEliminar.getTime())/1000)/3600;
-                                    if(actual.before(fechaEliminar) && fff.equals("")){
+                                    if(actual.before(fechaEliminar) ){
                                         Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
                                         toast2.show();
                                         cancelo=true;
                                         ref.child(child.getKey()).removeValue();
                                     }
-                                    else if(fechaEliminar.equals(actual)&& x2<1 && fff.equals("")){
+                                    else if(fechaEliminar.equals(actual)&& x2<1 ){
                                         Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
                                         toast2.show();
                                         cancelo=true;
                                         ref.child(child.getKey()).removeValue();
                                     }
-                                    else if(actual.after(fechaEliminar) || !fff.equals("")){
+                                    else if(actual.after(fechaEliminar)){
                                         Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes cancelar esta reserva", Toast.LENGTH_LONG);
                                         toast2.show();
                                     }
@@ -254,4 +188,5 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
         Button mCancelar;
 
     }
+
 }

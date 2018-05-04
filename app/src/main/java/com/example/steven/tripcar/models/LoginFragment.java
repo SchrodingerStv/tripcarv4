@@ -16,6 +16,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import static android.app.Activity.RESULT_OK;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -103,7 +105,9 @@ public class LoginFragment extends Fragment {
         Button btnLogin = (Button)view.findViewById(R.id.ingresar);
         txtUserEmail = (EditText) view.findViewById(R.id.Email);
         txtUserContrasenia = (EditText) view.findViewById(R.id.Contrasenia);
-
+        if(!validarEmail(txtUserEmail.getText().toString())){
+            txtUserEmail.setError("Email no válido");
+        }
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
@@ -146,7 +150,10 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-
+    private boolean validarEmail(String email) {
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        return pattern.matcher(email).matches();
+    }
     private void Logearse(final Usuario usuario){
 
 

@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
@@ -18,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.gson.Gson;
@@ -31,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,14 +50,17 @@ public class CochesBuscadorFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "fechaInicial";
     private static final String ARG_PARAM2 = "fechaFinal";
+    private static final String ARG_PARAM3 = "tamanio";
     private List<Coche> listaCochesFiltro = new ArrayList<>();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String mParam3;
     private ListView mListView;
-    private MyAdapter myAdapter;
+    private MyAdapterBuscador myAdapter;
     private OnFragmentInteractionListener mListener;
+    private boolean dato;
 
     public CochesBuscadorFragment() {
         // Required empty public constructor
@@ -67,10 +75,11 @@ public class CochesBuscadorFragment extends Fragment {
      * @return A new instance of fragment CochesBuscadorFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CochesBuscadorFragment newInstance(String param1, String param2) {
+    public static CochesBuscadorFragment newInstance(String param1, String param2,String param3 ) {
         CochesBuscadorFragment fragment = new CochesBuscadorFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM3, param3);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -82,7 +91,11 @@ public class CochesBuscadorFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam3 = getArguments().getString(ARG_PARAM3);
+            Log.e("comprobar", mParam1+mParam2+mParam3);
         }
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -92,7 +105,7 @@ public class CochesBuscadorFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_coches_buscador, container, false);
 
         mListView = (ListView) view.findViewById(R.id.listviewFiltro);
-        obtenerCoches();
+        boolean hacer= comprobarFechas();
 
 
 
@@ -102,75 +115,191 @@ public class CochesBuscadorFragment extends Fragment {
 
     }
 
-    private void obtenerCoches() {
+    private void obtenerCoches(boolean dato, final List<String> matriculas) {
 
-        final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
+        final DatabaseReference ref = database.getReference(FirebaseReferences.COCHES_REFERENCE);
+
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        formatSymbols.setDecimalSeparator(',');
+        final DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+
+                String pattern = "dd/MM/yyyy HH:mm";
+                SimpleDateFormat format = new SimpleDateFormat(pattern);
+                DateFormat writeFormat = new SimpleDateFormat(pattern);
+
+
+
+
+                if(dato && mParam3.equals("Seleccionar tamaño")){
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            int i = 0;
+                            for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                Coche coche = postSnapshot2.getValue(Coche.class);
+
+                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                listaCochesFiltro.add(btChildDetails);
+
+                                myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
+                                mListView.setAdapter(myAdapter);
+                                myAdapter.notifyDataSetChanged();
+
+
+                            }
+                        }
+
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                 else{
+
+                    Log.e("comprobar", String.valueOf(dato));
+                    Log.e("comprobar", String.valueOf(matriculas));
+
+                    ref.orderByChild("Tamanio").equalTo(mParam3).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                Coche coche = postSnapshot2.getValue(Coche.class);
+                                assert coche != null;
+                                if(matriculas.size()==3){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(), matriculas.get(0))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+                                    }
+                                }
+                                else if(matriculas.size()==4){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
+                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+
+                                    }
+                                }
+                                else if(matriculas.size()==5){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
+                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+
+                                    }
+                                }
+                                else if(matriculas.size()==6){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
+                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+                                    }
+                                }
+                                else if(matriculas.size()==7){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
+                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(6))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+                                    }
+                                }
+                                else if(matriculas.size()==8){
+                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
+                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(6))
+                                            && !Objects.equals(coche.getMatricula(), matriculas.get(7))) {
+                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                        listaCochesFiltro.add(btChildDetails);
+
+                                    }
+                                }
+
+                            }
+
+                            myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
+                            mListView.setAdapter(myAdapter);
+                            myAdapter.notifyDataSetChanged();
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+
+
+    }
+
+    private boolean comprobarFechas(){
+        final boolean existe = false;
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
 
         DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
         formatSymbols.setDecimalSeparator(',');
         final DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
 
-
-        ref.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                final DatabaseReference refcoche = database.getReference(FirebaseReferences.COCHES_REFERENCE);
 
                 String pattern = "dd/MM/yyyy HH:mm";
                 SimpleDateFormat format = new SimpleDateFormat(pattern);
                 DateFormat writeFormat = new SimpleDateFormat( pattern);
-
-
+                boolean busqueda = false;
+                List<String> matriculas = new ArrayList<>();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     final Reserva post = postSnapshot.getValue(Reserva.class);
 
                     try {
-                        Date fechaParamI = format.parse(mParam1);
-                        Date fechaparamF = format.parse(mParam2);
-                        Date fechagetI = format.parse(post.getfInicio());
-                        final Date fechagetF = format.parse(post.getfFinal());
+                        Date dateI = format.parse(mParam1);
+                        Date dateF = format.parse(mParam2);
+                        Date dateIH = format.parse(post.getfInicio());
+                        Date dateFH = format.parse(post.getfFinal());
 
-                        if(!post.getfFinalizacion().equals("")){
+                        if(dateIH.equals(dateF)||dateFH.equals(dateI)||dateI.equals(dateIH) || dateF.equals(dateFH )  ){
+                            busqueda=false;
+                            String matricula = post.getCoche();
+                            matriculas.add(matricula);
+                            //guardardato(busqueda,matricula);
 
-                                refcoche.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        }
 
-                                        for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+                        else if(dateI.getTime()<=(dateFH.getTime())  || dateF.getTime()<=dateFH.getTime() ){
+                            busqueda=false;
+                            String matricula = post.getCoche();
+                            matriculas.add(matricula);
+                            //guardardato(busqueda,matricula);
 
-                                            final Coche coche = postSnapshot2.getValue(Coche.class);
-
-                                            if (post.getCoche().equals(coche.getMatricula()) ) {
-
-                                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                                listaCochesFiltro.add(btChildDetails);
-                                                myAdapter = new MyAdapter(getActivity(), listaCochesFiltro);
-                                                mListView.setAdapter(myAdapter);
-                                                myAdapter.notifyDataSetChanged();
-
-
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
+                        }
+                        else if(dateI.getTime()>(dateIH.getTime()) && dateF.getTime()>(dateFH.getTime()) ){
+                            busqueda=true;
+                            String matricula = "";
+                            matriculas.add(matricula);
 
 
-
-
-
-
-
+                        }
 
 
                     } catch (ParseException e) {
@@ -178,11 +307,8 @@ public class CochesBuscadorFragment extends Fragment {
                     }
 
 
-
-
-
-
                 }
+                obtenerCoches( busqueda,matriculas);
 
 
             }
@@ -192,6 +318,14 @@ public class CochesBuscadorFragment extends Fragment {
 
             }
         });
+
+        return existe;
+    }
+    public void guardardato(boolean data,String matriculas){
+        dato=data;
+        int length =  matriculas.length();
+
+
 
 
     }

@@ -11,7 +11,6 @@ public class usuarioCocheReserva {
     private String coche;
     private String precioTotal;
     private String idReserva;
-    private String fFinalizacion;
 
     private String MarcaModelo;
     private String Tamanio;
@@ -25,14 +24,14 @@ public class usuarioCocheReserva {
 
 
 
-    public usuarioCocheReserva(String fInicio, String fFinal, String usuario, String coche, String precioTotal, String marcaModelo, String tamanio, String precioHora, String uriImagen, String matricula, String idReserva,String fFinalizacion) {
+    public usuarioCocheReserva(String fInicio, String fFinal, String usuario, String coche, String precioTotal, String marcaModelo, String tamanio, String precioHora, String uriImagen, String matricula, String idReserva) {
 
         this.fInicio = fInicio;
         this.fFinal = fFinal;
         this.usuario = usuario;
         this.coche = coche;
         this.precioTotal = precioTotal;
-        this.fFinalizacion = fFinalizacion;
+
 
         this.MarcaModelo = marcaModelo;
         this.Tamanio = tamanio;
@@ -41,13 +40,7 @@ public class usuarioCocheReserva {
         this.Matricula = matricula;
         this.idReserva = idReserva;
     }
-    public String getfFinalizacion() {
-        return fFinalizacion;
-    }
 
-    public void setfFinalizacion(String fFinalizacion) {
-        this.fFinalizacion = fFinalizacion;
-    }
 
     public String getIdReserva() {
         return idReserva;

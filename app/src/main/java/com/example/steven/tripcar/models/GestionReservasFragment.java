@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -131,12 +132,20 @@ public class GestionReservasFragment extends Fragment {
                             for (DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                                 final Coche coche = postSnapshot.getValue(Coche.class);
                                 usuarioCocheReserva btChildDetails = new usuarioCocheReserva(post.getfInicio(),post.getfFinal(),post.getUsuario(),post.getCoche(),post.getPrecioTotal(),coche.getMarcaModelo(),
-                                        coche.getTamanio(),coche.getPrecioHora(),coche.getUriImagen(),coche.getMatricula(),post.getIdReserva(),post.getfFinalizacion());
+                                        coche.getTamanio(),coche.getPrecioHora(),coche.getUriImagen(),coche.getMatricula(),post.getIdReserva());
                                 listaReservas.add(btChildDetails);
 
                                 myAdapterReservas= new MyAdapterReservas(getActivity(),listaReservas);
                                 mListView.setAdapter(myAdapterReservas);
                                 myAdapterReservas.notifyDataSetChanged();
+                                myAdapterReservas.sort(new Comparator<usuarioCocheReserva>() {
+                                    @Override
+                                    public int compare(usuarioCocheReserva o1, usuarioCocheReserva o2) {
+                                        return o2.getTamanio().compareTo(o1.getTamanio());
+                                    }
+
+
+                                });
                             }
 
                         }

@@ -8,18 +8,25 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.steven.tripcar.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,9 +45,10 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private EditText fBInicial,hBinicial,fBFinal,hBFinal;
+    private EditText fBInicial, hBinicial, fBFinal, hBFinal;
     private Button buscar;
     private OnFragmentInteractionListener mListener;
+    private Spinner tamanios;
 
     public BuscadorFragment() {
         // Required empty public constructor
@@ -77,22 +85,43 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view= inflater.inflate(R.layout.fragment_buscador, container, false);
+        final View view = inflater.inflate(R.layout.fragment_buscador, container, false);
 
         buscar = (Button) view.findViewById(R.id.Buscar);
+        final String[] dato = new String[1];
+
+        tamanios = (Spinner) view.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.tamanios, android.R.layout.simple_spinner_item);
+        tamanios.setAdapter(adapter);
+
+        tamanios.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                dato[0] = parent.getItemAtPosition(position).toString();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         buscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
                 Bundle bundle = new Bundle();
-                bundle.putString("fechaInicial", fBInicial.getText().toString()+" "+hBinicial.getText().toString());
-                bundle.putString("fechaFinal", fBFinal.getText().toString()+" "+hBFinal.getText().toString());
+                bundle.putString("fechaInicial", fBInicial.getText().toString() + " " + hBinicial.getText().toString());
+                bundle.putString("fechaFinal", fBFinal.getText().toString() + " " + hBFinal.getText().toString());
+                bundle.putString("tamanio", dato[0]);
 
                 Fragment myObj = new CochesBuscadorFragment();
                 myObj.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_main,myObj).addToBackStack(null).commit();
-
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_main, myObj).addToBackStack(null).commit();
+                // myObj.setArguments(bundle);
             }
         });
 
@@ -151,61 +180,145 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                    if(year< yy || (monthOfYear+1)<mm){
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                        toast2.show();
+                    String fecha = "";
+                    if (dayOfMonth < 10 && monthOfYear + 1 > 9) {
+                        fecha = "0" + String.valueOf(dayOfMonth) + "/" + String.valueOf(monthOfYear + 1)
+                                + "/" + String.valueOf(year);
+                    } else if (monthOfYear + 1 < 10 && dayOfMonth > 9) {
+                        fecha = String.valueOf(dayOfMonth) + "/0" + String.valueOf(monthOfYear + 1)
+                                + "/" + String.valueOf(year);
+                    } else if (monthOfYear + 1 < 10 && dayOfMonth < 10) {
+                        fecha = "0" + String.valueOf(dayOfMonth) + "/0" + String.valueOf(monthOfYear + 1)
+                                + "/" + String.valueOf(year);
+                    } else {
+                        fecha = String.valueOf(dayOfMonth) + "/" + String.valueOf(monthOfYear + 1)
+                                + "/" + String.valueOf(year);
                     }
-                    else{
 
-                        String fecha = String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
-                                +"/"+String.valueOf(year);
-                        fBInicial.setText(fecha);
-                        fBFinal.setText("");
-                        hBFinal.setText("");
+                    String pattern = "dd/MM/yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    try {
+
+                        String fechaActual = format.format(new Date());
+                        Date fechaSelect = format.parse(fecha);
+                        Date actual = format.parse(fechaActual);
+
+                        if (fechaSelect.equals(actual)) {
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida", Toast.LENGTH_SHORT);
+                            toast2.show();
+                        } else if (fechaSelect.before(actual)) {
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida", Toast.LENGTH_SHORT);
+                            toast2.show();
+                        } else if (fechaSelect.after(actual)) {
+                            fBInicial.setText(fecha);
+                            fBFinal.setText("");
+                            hBFinal.setText("");
+                        }
+
+                        Log.e("fechaI actual: ", actual.toString());
+                        Log.e("fechaI select: ", fechaSelect.toString());
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
+
 
                 }
             }, yy, mm, dd);
 
             datePicker.show();
         }
-        if(v==hBinicial){
+        if (v == hBinicial) {
 
 
             //final int segundos = calendario.get(Calendar.SECOND);
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    String hora = hourOfDay + ":" + minute;
-                    hBinicial.setText(hora);
+
+                    String hora = "";
+                    if (minute < 10) {
+                        hora = hourOfDay + ":0" + minute;
+                    } else {
+                        hora = hourOfDay + ":" + minute;
+                    }
+
+                    if(hora.equals("0:00")){
+                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
+                        toast2.show();
+                    }else{
+                        hBinicial.setText(hora);
+                        fBFinal.setText("");
+                        hBFinal.setText("");
+                    }
+
                 }
-            },hora,minutos,true);
+            }, hora, minutos, true);
             timePickerDialog.show();
         }
 
 
-
-        if(v==fBFinal){
+        if (v == fBFinal) {
 
 
             DatePickerDialog datePicker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                    if(year< yy ||  (monthOfYear+1)<mm ){
 
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                        toast2.show();
+                    String fecha = "";
+                    if(dayOfMonth<10 && monthOfYear+1>9){
+                        fecha = "0"+String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
+                    }
+                    else if(monthOfYear+1<10 && dayOfMonth>9){
+                        fecha = String.valueOf(dayOfMonth) +"/0"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
+                    }
+                    else if(monthOfYear+1<10 && dayOfMonth<10){
+                        fecha = "0"+String.valueOf(dayOfMonth) +"/0"+String.valueOf(monthOfYear+1)
+                                +"/"+String.valueOf(year);
                     }
                     else{
-
-                        String fecha = String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
+                        fecha = String.valueOf(dayOfMonth) +"/"+String.valueOf(monthOfYear+1)
                                 +"/"+String.valueOf(year);
+                    }
 
-                        if(!fecha.equals(fBInicial.getText().toString()) || fecha.equals(fBInicial.getText().toString())){
+                    String fechaInicial = "";
+                    String pattern = "dd/MM/yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    if(!fBInicial.getText().toString().equals("")){
+                        fechaInicial = fBInicial.getText().toString();
+                    }
+
+
+                    try {
+
+
+                        Date fechaSelect = format.parse(fecha);
+
+                        Date fechaInit = format.parse(fechaInicial);
+
+                        if(fechaSelect.equals(fechaInit)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.before(fechaInit)){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(fechaSelect.after(fechaInit)){
                             fBFinal.setText(fecha);
+
                         }
 
+                        Log.e("fechaF actual: ",fechaInit.toString());
+                        Log.e("fechaF select: ",fechaSelect.toString());
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
 
                 }
@@ -214,20 +327,26 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
             datePicker.show();
         }
 
-        if(v==hBFinal){
+        if (v == hBFinal) {
 
 
             //final int segundos = calendario.get(Calendar.SECOND);
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    String hora = hourOfDay + ":" + minute;
+                    String hora = "";
+                    if(minute<10){
+                        hora = hourOfDay + ":0" + minute;
+                    }else{
+                        hora = hourOfDay + ":" + minute;
+                    }
+
 
                     hBFinal.setText(hora);
 
 
                 }
-            },hora,minutos,true);
+            }, hora, minutos, true);
             timePickerDialog.show();
         }
 
