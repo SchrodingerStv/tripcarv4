@@ -61,7 +61,8 @@ public class CochesBuscadorFragment extends Fragment {
     private MyAdapterBuscador myAdapter;
     private OnFragmentInteractionListener mListener;
     private boolean dato;
-
+    private List<String>matricules = new ArrayList<>();
+    private List<String>matriculesOK = new ArrayList<>();
     public CochesBuscadorFragment() {
         // Required empty public constructor
     }
@@ -161,8 +162,81 @@ public class CochesBuscadorFragment extends Fragment {
                         }
                     });
                 }
+                else if(!dato && mParam3.equals("Seleccionar tamaño")){
+                    Log.e("comprobaras", String.valueOf(dato));
+                    Log.e("comprobaras", String.valueOf(matriculas));
 
-                 else{
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                Coche coche = postSnapshot2.getValue(Coche.class);
+                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+
+                                matricules.add(coche.getMatricula());
+
+                            }
+                            for (String m : matriculas){
+                                for(String s: matricules){
+
+                                    if(!Objects.equals(s, m)){
+
+                                        matriculesOK.add(s);
+
+                                    }
+                                }
+                            }
+
+                            for (String j : matriculesOK){
+                                ref.orderByChild("Matricula").equalTo(j).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                            Coche coche = postSnapshot2.getValue(Coche.class);
+                                            Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+
+                                            listaCochesFiltro.add(coche);
+                                        }
+
+
+
+
+
+
+
+
+
+                                        myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
+                                        mListView.setAdapter(myAdapter);
+                                        myAdapter.notifyDataSetChanged();
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                 }
+                 else if(!dato &&  !mParam3.equals("Seleccionar tamaño")){
 
                     Log.e("comprobar", String.valueOf(dato));
                     Log.e("comprobar", String.valueOf(matriculas));
@@ -174,68 +248,59 @@ public class CochesBuscadorFragment extends Fragment {
                             for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
 
                                 Coche coche = postSnapshot2.getValue(Coche.class);
-                                assert coche != null;
-                                if(matriculas.size()==3){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(), matriculas.get(0))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
+                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
 
-                                    }
-                                }
-                                else if(matriculas.size()==4){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
-                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
-
-
-                                    }
-                                }
-                                else if(matriculas.size()==5){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
-                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
-
-
-                                    }
-                                }
-                                else if(matriculas.size()==6){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
-                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
-
-                                    }
-                                }
-                                else if(matriculas.size()==7){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
-                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(6))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
-
-                                    }
-                                }
-                                else if(matriculas.size()==8){
-                                    if (!Objects.equals(coche.getMatricula(), matriculas.get(1)) && !Objects.equals(coche.getMatricula(), matriculas.get(2))&& !Objects.equals(coche.getMatricula(),
-                                            matriculas.get(0))&& !Objects.equals(coche.getMatricula(), matriculas.get(3))&& !Objects.equals(coche.getMatricula(), matriculas.get(4))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(5))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(6))
-                                            && !Objects.equals(coche.getMatricula(), matriculas.get(7))) {
-                                        Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-                                        listaCochesFiltro.add(btChildDetails);
-
-                                    }
-                                }
+                                matricules.add(coche.getMatricula());
 
                             }
+                            for (String m : matriculas){
+                                for(String s: matricules){
 
-                            myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
-                            mListView.setAdapter(myAdapter);
-                            myAdapter.notifyDataSetChanged();
+                                    if(!Objects.equals(s, m)){
+
+                                        matriculesOK.add(s);
+
+                                    }
+                                }
+                            }
+
+                            for (String j : matriculesOK){
+                                ref.orderByChild("Matricula").equalTo(j).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                            Coche coche = postSnapshot2.getValue(Coche.class);
+                                            Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+
+                                            listaCochesFiltro.add(coche);
+                                        }
+
+
+
+
+
+
+
+
+
+                                        myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
+                                        mListView.setAdapter(myAdapter);
+                                        myAdapter.notifyDataSetChanged();
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+
+
 
 
                         }

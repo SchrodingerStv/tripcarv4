@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "967023466536",
+    "firebase_url": "https://tripcar-a7897.firebaseio.com",
+    "project_id": "tripcar-a7897",
+    "storage_bucket": "tripcar-a7897.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967023466536:android:50f678a6f4b3655e",
+        "android_client_info": {
+          "package_name": "com.example.steven.tripcar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967023466536-02votqk7e1b89vab2vobfbhr4dn0djaf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.steven.tripcar",
+            "certificate_hash": "86de2ad57924597ac374c32d90eea5be0c11c22d"
+          }
+        },
+        {
+          "client_id": "967023466536-ekbfchrr4tjuhheg4hqg04slf8ac0kuf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEIuoj2Ce7vPWZG94q4m_-pxLMCG8GUVM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967023466536-ekbfchrr4tjuhheg4hqg04slf8ac0kuf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
