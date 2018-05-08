@@ -165,7 +165,6 @@ public class CochesBuscadorFragment extends Fragment {
                 else if(!dato && mParam3.equals("Seleccionar tamaño")){
                     Log.e("comprobaras", String.valueOf(dato));
                     Log.e("comprobaras", String.valueOf(matriculas));
-
                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -173,23 +172,15 @@ public class CochesBuscadorFragment extends Fragment {
                             for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
 
                                 Coche coche = postSnapshot2.getValue(Coche.class);
-                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
-
                                 matricules.add(coche.getMatricula());
 
+
                             }
-                            for (String m : matriculas){
-                                for(String s: matricules){
+                           matricules.removeAll(matriculas);
 
-                                    if(!Objects.equals(s, m)){
 
-                                        matriculesOK.add(s);
-
-                                    }
-                                }
-                            }
-
-                            for (String j : matriculesOK){
+                            for (String j : matricules){
+                                Log.e("comprobaras", String.valueOf(j));
                                 ref.orderByChild("Matricula").equalTo(j).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -199,14 +190,8 @@ public class CochesBuscadorFragment extends Fragment {
                                             Coche coche = postSnapshot2.getValue(Coche.class);
                                             Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
 
-                                            listaCochesFiltro.add(coche);
+                                            listaCochesFiltro.add(btChildDetails);
                                         }
-
-
-
-
-
-
 
 
 
@@ -225,9 +210,6 @@ public class CochesBuscadorFragment extends Fragment {
                             }
 
 
-
-
-
                         }
 
                         @Override
@@ -235,6 +217,11 @@ public class CochesBuscadorFragment extends Fragment {
 
                         }
                     });
+
+
+
+
+
                  }
                  else if(!dato &&  !mParam3.equals("Seleccionar tamaño")){
 
@@ -253,18 +240,9 @@ public class CochesBuscadorFragment extends Fragment {
                                 matricules.add(coche.getMatricula());
 
                             }
-                            for (String m : matriculas){
-                                for(String s: matricules){
+                            matricules.removeAll(matriculas);
 
-                                    if(!Objects.equals(s, m)){
-
-                                        matriculesOK.add(s);
-
-                                    }
-                                }
-                            }
-
-                            for (String j : matriculesOK){
+                            for (String j : matricules){
                                 ref.orderByChild("Matricula").equalTo(j).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -274,14 +252,8 @@ public class CochesBuscadorFragment extends Fragment {
                                             Coche coche = postSnapshot2.getValue(Coche.class);
                                             Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
 
-                                            listaCochesFiltro.add(coche);
+                                            listaCochesFiltro.add(btChildDetails);
                                         }
-
-
-
-
-
-
 
 
 
@@ -347,15 +319,23 @@ public class CochesBuscadorFragment extends Fragment {
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
-                            //guardardato(busqueda,matricula);
 
                         }
 
-                        else if(dateI.getTime()<=(dateFH.getTime())  || dateF.getTime()<=dateFH.getTime() ){
+                        else if(dateI.getTime()>=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime())
+                               ){
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
-                            //guardardato(busqueda,matricula);
+
+
+                        }
+
+                        else if(dateI.getTime()<=(dateFH.getTime()) && dateF.getTime()>=(dateFH.getTime())){
+                            busqueda=false;
+                            String matricula = post.getCoche();
+                            matriculas.add(matricula);
+
 
                         }
                         else if(dateI.getTime()>(dateIH.getTime()) && dateF.getTime()>(dateFH.getTime()) ){
@@ -386,14 +366,7 @@ public class CochesBuscadorFragment extends Fragment {
 
         return existe;
     }
-    public void guardardato(boolean data,String matriculas){
-        dato=data;
-        int length =  matriculas.length();
 
-
-
-
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

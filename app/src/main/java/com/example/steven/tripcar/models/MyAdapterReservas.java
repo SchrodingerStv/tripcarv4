@@ -57,7 +57,7 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
             e.printStackTrace();
         }
        Bitmap bit = BitmapFactory.decodeStream(srt);
-        double precioHora = Double.parseDouble(usaRC.getPrecioTotal());
+        float precioHora = Float.parseFloat(usaRC.getPrecioTotal());
         DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
         formatSymbols.setDecimalSeparator(',');
         DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);

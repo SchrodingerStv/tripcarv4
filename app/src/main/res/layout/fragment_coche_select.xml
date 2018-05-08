@@ -139,6 +139,22 @@
             android:ems="10"
             android:focusable="false"
             android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/labelPT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="Precio total"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <EditText
+            android:id="@+id/precioTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/Reservar"
