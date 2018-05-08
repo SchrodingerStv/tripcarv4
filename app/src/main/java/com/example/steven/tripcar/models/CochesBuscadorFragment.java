@@ -322,8 +322,7 @@ public class CochesBuscadorFragment extends Fragment {
 
                         }
 
-                        else if(dateI.getTime()>=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime())
-                               ){
+                        else if(dateI.getTime()>=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime())){
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
