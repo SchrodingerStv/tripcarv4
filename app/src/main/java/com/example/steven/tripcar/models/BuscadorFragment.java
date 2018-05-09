@@ -237,25 +237,58 @@ public class BuscadorFragment extends Fragment implements View.OnClickListener {
             TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    String hora = "";
+                    String horaI = "";
+                    String comparar = "";
                     if (minute < 10) {
-                        hora = hourOfDay + ":0" + minute;
+                        comparar = hora + ":0" + minutos;
+                        horaI = hourOfDay + ":0" + minute;
+
                     } else {
-                        hora = hourOfDay + ":" + minute;
+                        horaI = hourOfDay + ":" + minute;
+                        comparar = hora + ":" + minutos;
+
                     }
 
-                    if(hora.equals("0:00")){
-                        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
-                        toast2.show();
-                    }else{
-                        hBinicial.setText(hora);
-                        fBFinal.setText("");
-                        hBFinal.setText("");
+                    String fechaInicial = "";
+                    String pattern = "dd/MM/yyyy HH:mm";
+                    String pattern2 = "dd/MM/yyyy";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
+                    SimpleDateFormat format2 = new SimpleDateFormat(pattern2);
+                    Date date = new Date();
+                    fechaInicial=  fBInicial.getText().toString();
+
+                    try{
+                        Date date1 = format.parse("00/00/0000 "+horaI);
+                        Date date2 = format.parse("00/00/0000 "+comparar);
+                        String dateact = format.format(date);
+                        Date date4 =  format2.parse(dateact);
+                        Date date3 = format2.parse(fechaInicial);
+
+                        if(horaI.equals("0:00")){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(date1.getTime()<date2.getTime() && date3.getTime()==date4.getTime()){
+                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida" , Toast.LENGTH_SHORT);
+                            toast2.show();
+                        }
+                        else if(date3.getTime()>=date4.getTime()){
+                            hBinicial.setText(horaI);
+                            fBFinal.setText("");
+                            hBFinal.setText("");
+                        }
+                        else{
+                            hBinicial.setText(horaI);
+                            fBFinal.setText("");
+                            hBFinal.setText("");
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
+
+
 
                 }
-
-
 
 
             },hora,minutos,true);
