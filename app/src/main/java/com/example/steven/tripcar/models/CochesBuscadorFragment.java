@@ -162,6 +162,34 @@ public class CochesBuscadorFragment extends Fragment {
                         }
                     });
                 }
+                else if(dato && !mParam3.equals("Seleccionar tamaño")){
+                    ref.orderByChild("Tamanio").equalTo(mParam3).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            int i = 0;
+                            for (DataSnapshot postSnapshot2 : dataSnapshot.getChildren()) {
+
+                                Coche coche = postSnapshot2.getValue(Coche.class);
+
+                                Coche btChildDetails = new Coche(coche.getMarcaModelo(), coche.getTamanio(), coche.getPrecioHora(), coche.getUriImagen(), coche.getMatricula());
+                                listaCochesFiltro.add(btChildDetails);
+
+                                myAdapter = new MyAdapterBuscador(getActivity(), listaCochesFiltro);
+                                mListView.setAdapter(myAdapter);
+                                myAdapter.notifyDataSetChanged();
+
+
+                            }
+                        }
+
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
                 else if(!dato && mParam3.equals("Seleccionar tamaño")){
                     Log.e("comprobaras", String.valueOf(dato));
                     Log.e("comprobaras", String.valueOf(matriculas));
@@ -315,7 +343,8 @@ public class CochesBuscadorFragment extends Fragment {
                         Date dateIH = format.parse(post.getfInicio());
                         Date dateFH = format.parse(post.getfFinal());
 
-                        if(dateIH.equals(dateF)||dateFH.equals(dateI)||dateI.equals(dateIH) || dateF.equals(dateFH )  ){
+                        if(dateIH.equals(dateF)||dateFH.equals(dateI)||dateI.equals(dateIH) || dateF.equals(dateFH ) ){
+                            Log.e("fechas no validas", "soy 1");
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
@@ -323,6 +352,7 @@ public class CochesBuscadorFragment extends Fragment {
                         }
 
                         else if(dateI.getTime()>=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime())){
+                            Log.e("fechas no validas", "soy 2");
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
@@ -331,19 +361,28 @@ public class CochesBuscadorFragment extends Fragment {
                         }
 
                         else if(dateI.getTime()<=(dateFH.getTime()) && dateF.getTime()>=(dateFH.getTime())){
+                            Log.e("fechas no validas", "soy 3");
                             busqueda=false;
                             String matricula = post.getCoche();
                             matriculas.add(matricula);
 
 
                         }
+                        else if(dateI.getTime()<=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime()) &&  dateF.getTime()>=(dateIH.getTime())){
+                            Log.e("fechas no validas", "soy 4");
+                            busqueda=false;
+                            String matricula = post.getCoche();
+                            matriculas.add(matricula);
+                        }
                         else if(dateI.getTime()>(dateIH.getTime()) && dateF.getTime()>(dateFH.getTime()) ){
+                            Log.e("fechas validas", "soy 5");
                             busqueda=true;
                             String matricula = "";
                             matriculas.add(matricula);
 
 
                         }
+
 
 
                     } catch (ParseException e) {

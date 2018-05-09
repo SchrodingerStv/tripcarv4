@@ -193,7 +193,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                      String d=prefe.getString("Email", "");
                     final DatabaseReference ref = database.getReference(FirebaseReferences.RESERVAS_REFERENCE);
 
-                    ref.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             SharedPreferences prefe=getActivity().getSharedPreferences("UsuarioEmail", Context.MODE_PRIVATE);
@@ -223,7 +223,6 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
                                             if(obj.getMatricula().equals(reserva.getCoche())) {
 
-
                                                 ref.orderByChild("coche").equalTo(obj.getMatricula()).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -251,7 +250,12 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                                                                     toast1.show();
 
                                                                 }
-                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateIH.getTime()) ){
+                                                                else if(dateI.getTime()<=(dateIH.getTime()) && dateF.getTime()<=(dateFH.getTime()) &&  dateF.getTime()>=(dateIH.getTime())){
+                                                                    Toast toast1 = Toast.makeText(getActivity().getApplicationContext(), "No puedes reservar con esas fechas", Toast.LENGTH_LONG);
+                                                                    toast1.show();
+
+                                                                }
+                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateFH.getTime()) &&  dateF.getTime()<(dateIH.getTime())){
                                                                     float x = (float) ((dateF.getTime()-dateI.getTime())/1000)/3600;
                                                                     float total = x*coste;
                                                                     Log.i("Horas ", String.valueOf(total));
@@ -268,7 +272,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                                                                     Log.i("Horas ", String.valueOf(total));
                                                                     Reserva reservadata = new Reserva(fInicial.getText() + " " + hinicial.getText(), fFinal.getText()
                                                                             + " " + hFinal.getText(), u, obj.getMatricula(), String.valueOf(total), UUID.randomUUID().toString());
-                                                                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Reserva realizada", Toast.LENGTH_LONG);
+                                                                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Reserva realizadaaaaaa", Toast.LENGTH_LONG);
                                                                     toast2.show();
                                                                     ref.push().setValue(reservadata);
                                                                 }
@@ -321,7 +325,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                                                                     toast1.show();
 
                                                                 }
-                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateIH.getTime()) ){
+                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateFH.getTime()) ){
                                                                     float x = (float) ((dateF.getTime()-dateI.getTime())/1000)/3600;
                                                                     float total = x*coste;
                                                                     Log.i("Horas ", String.valueOf(total));
@@ -413,7 +417,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                                                                     toast1.show();
 
                                                                 }
-                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateIH.getTime()) ){
+                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateFH.getTime()) ){
                                                                     float x = (float) ((dateF.getTime()-dateI.getTime())/1000)/3600;
                                                                     float total = x*coste;
                                                                     Log.i("Horas ", String.valueOf(total));
@@ -482,7 +486,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                                                                     toast1.show();
 
                                                                 }
-                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateIH.getTime()) ){
+                                                                else if(dateI.getTime()<(dateIH.getTime()) && dateF.getTime()<(dateFH.getTime()) ){
                                                                     float x = (float) ((dateF.getTime()-dateI.getTime())/1000)/3600;
                                                                     float total = x*coste;
                                                                     Log.i("Horas ", String.valueOf(total));
@@ -670,19 +674,12 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                         Date fechaSelect = format.parse(fecha);
                         Date actual = format.parse(fechaActual);
 
-                        if(fechaSelect.equals(actual)){
-                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                            toast2.show();
-                        }
-                        else if(fechaSelect.before(actual)){
-                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                            toast2.show();
-                        }
-                        else if(fechaSelect.after(actual)){
-                            fInicial.setText(fecha);
-                            fFinal.setText("");
-                            hFinal.setText("");
-                        }
+
+
+                        fInicial.setText(fecha);
+                        fFinal.setText("");
+                        hFinal.setText("");
+
 
                         Log.e("fechaI actual: ",actual.toString());
                         Log.e("fechaI select: ",fechaSelect.toString());
@@ -773,15 +770,12 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
                         Date fechaInit = format.parse(fechaInicial);
 
-                        if(fechaSelect.equals(fechaInit)){
+
+                         if(fechaSelect.before(fechaInit)){
                             Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
                             toast2.show();
                         }
-                        else if(fechaSelect.before(fechaInit)){
-                            Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una fecha valida" , Toast.LENGTH_SHORT);
-                            toast2.show();
-                        }
-                        else if(fechaSelect.after(fechaInit)){
+                        else {
                             fFinal.setText(fecha);
 
                         }
@@ -812,27 +806,44 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
                     }else{
                         hora = hourOfDay + ":" + minute;
                     }
-
                     hFinal.setText(hora);
-
-                    if(fInicial.getText()!=null && hinicial.getText()!=null && fFinal.getText()!=null && hFinal!=null){
-                        String fecha1 = fInicial.getText() + " " + hinicial.getText();
-                        String fecha2 = fFinal.getText() + " " + hFinal.getText();
+                    String pattern = "dd/MM/yyyy HH:mm";
+                    SimpleDateFormat format = new SimpleDateFormat(pattern);
 
 
 
-                        String pattern = "dd/MM/yyyy HH:mm";
-                        final SimpleDateFormat format = new SimpleDateFormat(pattern);
+
+
+                    if(!fInicial.getText().toString().equals("") && !hinicial.getText().toString().equals("") && !fFinal.getText().toString().equals("") && !hFinal.getText().toString().equals("")){
+
                         try {
-                            final Date dateI = format.parse(fecha1);
-                            final Date dateF = format.parse(fecha2);
-                            float x = (float) ((dateF.getTime()-dateI.getTime())/1000)/3600;
-                            float total = x*coste;
-                            DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
-                            formatSymbols.setDecimalSeparator(',');
-                            DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
 
-                            pTotal.setText(df.format(total) + " €");
+
+                                String fecha1 = fInicial.getText() + " " + hinicial.getText();
+                                String fecha2 = fFinal.getText() + " " + hFinal.getText();
+                                final Date dateI = format.parse(fecha1);
+                                final Date dateF = format.parse(fecha2);
+                                Log.e("fecha2: ", fecha2);
+                                if (dateF.getTime() <= (dateI.getTime())) {
+                                    Log.e("fecha2: ", dateF.getTime()+"  "+dateI.getTime());
+                                    Toast toast2 = Toast.makeText(getActivity().getApplicationContext(), "Seleccione una hora valida", Toast.LENGTH_SHORT);
+                                    toast2.show();
+                                    hFinal.setText("");
+                                } else {
+                                    hFinal.setText(hora);
+                                    float x = (float) ((dateF.getTime() - dateI.getTime()) / 1000) / 3600;
+                                    float total = x * coste;
+
+                                    DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+                                    formatSymbols.setDecimalSeparator(',');
+                                    DecimalFormat df = new DecimalFormat("####,####.##", formatSymbols);
+
+                                    pTotal.setText(df.format(total) + " €");
+
+                                }
+
+
+
                         }
                         catch (ParseException e) {
                             e.printStackTrace();

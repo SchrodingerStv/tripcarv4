@@ -89,7 +89,7 @@
             android:id="@+id/labelFI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fecha inicial"
+            android:text="Fecha inicial                          Hora inicial"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
@@ -117,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
-            android:text="Fecha final"
+            android:text="Fecha final                             Hora final"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
