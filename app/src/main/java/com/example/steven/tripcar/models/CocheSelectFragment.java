@@ -777,6 +777,7 @@ public class CocheSelectFragment extends Fragment implements View.OnClickListene
 
                     }
 
+
                     String fechaInicial = "";
                     String pattern = "dd/MM/yyyy HH:mm";
                     String pattern2 = "dd/MM/yyyy";
