@@ -124,18 +124,27 @@ public class MyAdapterReservas extends ArrayAdapter<usuarioCocheReserva>  {
                                     String fechaActual = format.format(new Date());
                                     Date fechaEliminar = format.parse(fecha);
                                     Date actual = format.parse(fechaActual);
-                                    int x2 = (int) ((actual.getTime()-fechaEliminar.getTime())/1000)/3600;
-                                    if(actual.before(fechaEliminar) ){
+                                    int x2 = (int) ((fechaEliminar.getTime()-actual.getTime())/1000)/3600;
+                                    Log.e("hora", String.valueOf(x2));
+                                    if(actual.before(fechaEliminar) &&  x2>=1 ){
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
+                                        toast2.show();
+                                        cancelo=true;
+                                        ref.child(child.getKey()).removeValue();
+                                    }
+                                    else if(fechaEliminar.equals(actual)&& x2>=1 ){
                                         Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
                                         toast2.show();
                                         cancelo=true;
                                         ref.child(child.getKey()).removeValue();
                                     }
                                     else if(fechaEliminar.equals(actual)&& x2<1 ){
-                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "Reserva cancelada", Toast.LENGTH_LONG);
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes cancelar esta reserva", Toast.LENGTH_LONG);
                                         toast2.show();
-                                        cancelo=true;
-                                        ref.child(child.getKey()).removeValue();
+                                    }
+                                    else if(actual.before(fechaEliminar) &&  x2<1){
+                                        Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes cancelar esta reserva", Toast.LENGTH_LONG);
+                                        toast2.show();
                                     }
                                     else if(actual.after(fechaEliminar)){
                                         Toast toast2 = Toast.makeText(fa.getApplicationContext(), "No puedes cancelar esta reserva", Toast.LENGTH_LONG);
